@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.cesar</groupId>
-	<artifactId>project4</artifactId>
+	<artifactId>kaiju</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>project4</name>
+	<name>kaiju</name>
 	<description>API Restful</description>
 	<url/>
 	<licenses>

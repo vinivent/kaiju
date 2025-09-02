@@ -2,20 +2,24 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <annotationProcessing>
-      <profile name="Annotation profile for project4" enabled="true">
+      <profile name="Annotation profile for kaiju" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="false">
           <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.38/lombok-1.18.38.jar" />
         </processorPath>
-        <module name="project4" />
+        <module name="kaiju" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="kaijubackend" target="21" />
+    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="project4" options="-parameters" />
+      <module name="kaiju" options="-parameters" />
+      <module name="kaijubackend" options="-parameters" />
     </option>
   </component>
 </project>

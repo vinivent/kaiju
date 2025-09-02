@@ -1,13 +1,13 @@
-package com.cesar.project4;
+package com.cesar.kaiju;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class Project4Application {
+public class KaijuApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(Project4Application.class, args);
+		SpringApplication.run(KaijuApplication.class, args);
 
 	}
 
