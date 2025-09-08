@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Verifique sua conta - Kaiju</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        @media all {
+            .btn-primary a:hover {
+                background-color: #c92424 !important;
+                border-color: #c92424 !important;
+            }
+        }
+
+        @media only screen and (max-width: 640px) {
+            .main p,
+            .main td,
+            .main span {
+                font-size: 16px !important;
+            }
+
+            .wrapper {
+                padding: 16px !important;
+            }
+
+            .container {
+                padding: 0 !important;
+                width: 100% !important;
+            }
+
+            .main {
+                border-radius: 0 !important;
+            }
+
+            .btn a {
+                width: 100% !important;
+                font-size: 16px !important;
+            }
+        }
+    </style>
+</head>
+
+<body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f9f9f9;">
+<table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#f9f9f9" style="width: 100%; background-color: #f9f9f9;">
+    <tr>
+        <td>&nbsp;</td>
+        <td class="container" style="max-width: 600px; margin: 0 auto; padding-top: 40px; width: 600px;">
+            <div class="content" style="max-width: 600px; margin: 0 auto;">
+
+                <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="main" style="width: 100%; background: #ffffff; border-radius: 8px; border: 1px solid #eaebed;">
+                    <tr>
+                        <td class="wrapper" style="padding: 32px;">
+                            <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
+                                <tr>
+                                    <td align="center" style="text-align: center;">
+                                        <h2 style="color: #d62828; margin: 0 0 20px;">Bem-vindo ao Kaiju 🚀</h2>
+                                        <p style="font-size: 16px; color: #333; margin: 0 0 25px;">
+                                            Olá, <strong th:text="${username}">usuário</strong>!<br><br>
+                                            Obrigado por se registrar na nossa plataforma.<br>
+                                            Para ativar sua conta e começar a usar o Kaiju, clique no botão abaixo:
+                                        </p>
+
+                                        <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="btn btn-primary" width="100%">
+                                            <tr>
+                                                <td align="center" style="padding: 20px 0;">
+                                                    <a th:href="${verificationUrl}" target="_blank"
+                                                       style="background-color: #e63946; cursor: pointer; color: #ffffff; padding: 12px 24px; border-radius: 5px; text-decoration: none; font-weight: bold; display: inline-block;">
+                                                        Verificar Conta
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        </table>
+
+                                        <p style="font-size: 14px; color: #777; margin-top: 20px; margin-bottom: 30px">
+                                            Este link expira em 15 minutos.<br>
+                                            Se você não solicitou este cadastro, apenas ignore este e-mail.
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+                            <div class="footer" style="text-align: center; font-size: 12px; color: #aaa;">
+                                © 2025 Kaiju •
+                                <a href="https://kaiju.com/privacy" style="color: #e63946; text-decoration: none;">Política de Privacidade</a>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </td>
+        <td>&nbsp;</td>
+    </tr>
+</table>
+</body>
+</html>
