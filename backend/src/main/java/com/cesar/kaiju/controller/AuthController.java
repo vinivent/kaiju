@@ -1,12 +1,14 @@
 package com.cesar.kaiju.controller;
 
-import com.cesar.kaiju.dto.LoginRequest;
+import com.cesar.kaiju.dto.LoginRequestDTO;
 import com.cesar.kaiju.dto.ResetPasswordRequestDTO;
 import com.cesar.kaiju.dto.UserRegisterRequestDTO;
 import com.cesar.kaiju.service.UserService;
 import com.cesar.kaiju.util.JwtUtil;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -29,12 +31,35 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginRequest request) {
+    public ResponseEntity<String> login(@RequestBody LoginRequestDTO request) {
         Authentication authentication = new UsernamePasswordAuthenticationToken(
                 request.username(), request.password());
         authenticationManager.authenticate(authentication);
         String token = jwtUtil.generateToken(request.username());
-        return ResponseEntity.ok(token);
+
+        ResponseCookie cookie = ResponseCookie.from("token", token)
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(7 * 24 * 60 * 60)
+                .build();
+
+
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString()).body("Login realizado com sucesso.");
+    }
+
+    public ResponseEntity<String> logout() {
+        ResponseCookie cookie = ResponseCookie.from("token", "")
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("Strict")
+                .path("/")
+                .maxAge(0)
+                .build();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .body("Sessão Encerrada.");
     }
 
     @PostMapping("/register")

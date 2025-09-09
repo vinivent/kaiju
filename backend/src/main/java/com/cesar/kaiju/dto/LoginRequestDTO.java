@@ -1,6 +1,6 @@
 package com.cesar.kaiju.dto;
 
-public record LoginRequest(
+public record LoginRequestDTO(
         String username,
         String password
 ) {}
