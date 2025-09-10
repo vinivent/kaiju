@@ -1,11 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import apiClient from "./lib/http/api";
 
-const APP_HOME = "/app";
+const HOME = "/home";
 
 const OPEN = ["/", "/sobre", "/contato", "/forgot-password", "/reset-password"];
-
 const ONLY_GUEST = ["/login", "/register"];
+
+// prefixes e extensões de assets/imagens que devem ser liberados
+const ASSET_PREFIXES = ["/_next/", "/assets/", "/images/", "/public/"];
+const ASSET_EXT = /\.(png|jpe?g|gif|webp|svg|ico|avif|bmp)$/i;
 
 const hit = (path: string, list: string[]) =>
   list.some((p) => path === p || path.startsWith(p + "/"));
@@ -13,18 +16,28 @@ const hit = (path: string, list: string[]) =>
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
+  // libera assets e imagens
+  if (
+    pathname === "/favicon.ico" ||
+    ASSET_PREFIXES.some((p) => pathname.startsWith(p)) ||
+    ASSET_EXT.test(pathname)
+  ) {
+    return NextResponse.next();
+  }
+
+  // páginas abertas: sempre acessíveis
   if (hit(pathname, OPEN)) return NextResponse.next();
 
+  // páginas só para convidados (se logado -> redireciona)
   if (hit(pathname, ONLY_GUEST)) {
     const token = req.cookies.get("token")?.value;
     if (!token) return NextResponse.next();
 
     const ok = await validateSession(token);
-    if (ok) return redirect(req, APP_HOME);
-
-    return NextResponse.next();
+    return ok ? redirect(req, HOME) : NextResponse.next();
   }
 
+  // demais rotas: protegidas
   const token = req.cookies.get("token")?.value;
   if (!token) return toLogin(req);
 
