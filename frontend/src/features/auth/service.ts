@@ -1,4 +1,4 @@
-import apiClient, { ApiResponse } from "@/app/lib/http/api";
+import apiClient, { ApiResponse } from "@/lib/http/api";
 import { RegisterRequest, LoginRequest, ResetPasswordRequest } from "./model";
 
 export const authService = {
