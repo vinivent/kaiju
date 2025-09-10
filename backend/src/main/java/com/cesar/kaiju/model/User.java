@@ -78,6 +78,6 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return this.situation == UserSituation.ACTIVE;
+        return this.situation == UserSituation.VERIFIED;
     }
 }

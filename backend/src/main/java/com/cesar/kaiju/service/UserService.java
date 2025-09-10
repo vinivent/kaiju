@@ -120,7 +120,7 @@ public class UserService implements UserDetailsService {
             return "Token expirado. Solicite um novo.";
 
         User user = verification.getUser();
-        user.setSituation(UserSituation.ACTIVE);
+        user.setSituation(UserSituation.VERIFIED);
         userRepository.save(user);
         userVerifiedRepository.delete(verification);
 

@@ -1,7 +1,7 @@
 package com.cesar.kaiju.enums;
 
 public enum UserSituation {
-    ACTIVE,
+    VERIFIED,
     INACTIVE,
     PENDING,
     BLOCKED
