@@ -6,10 +6,7 @@ import com.cesar.kaiju.dto.UserRegisterRequestDTO;
 import com.cesar.kaiju.service.UserService;
 import com.cesar.kaiju.util.JwtUtil;
 import jakarta.persistence.EntityNotFoundException;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseCookie;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -60,6 +57,29 @@ public class AuthController {
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
                 .body("Sessão Encerrada.");
+    }
+
+    @GetMapping("/auth/session")
+    public ResponseEntity<?> validateSession(
+            @CookieValue(name = "token", required = false) String token) {
+        if (token == null || token.isBlank()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        try {
+            String username = jwtUtil.extractUsername(token);
+            boolean valid = jwtUtil.validateToken(token, username);
+            if (!valid) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+
+            return ResponseEntity.ok()
+                    .cacheControl(CacheControl.noStore())
+                    .header(HttpHeaders.PRAGMA, "no-cache")
+                    .build();
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
     }
 
     @PostMapping("/register")
