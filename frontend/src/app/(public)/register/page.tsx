@@ -1,9 +1,288 @@
-import React from 'react'
+"use client";
+
+import { authService } from "@/features/auth/service";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { toast } from "sonner";
+import { LoaderCircle, Eye, EyeOff } from "lucide-react";
+import Link from "next/link";
+import React from "react";
+
+/* --- ICONS --- */
+const GoogleIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    className="h-5 w-5"
+    viewBox="0 0 48 48"
+  >
+    <path
+      fill="#FFC107"
+      d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s12-5.373 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-2.641-.21-5.236-.611-7.743z"
+    />
+    <path
+      fill="#FF3D00"
+      d="M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"
+    />
+    <path
+      fill="#4CAF50"
+      d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238C29.211 35.091 26.715 36 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"
+    />
+    <path
+      fill="#1976D2"
+      d="M43.611 20.083H42V20H24v8h11.303c-.792 2.237-2.231 4.166-4.087 5.571l6.19 5.238C42.022 35.026 44 30.038 44 24c0-2.641-.21-5.236-.611-7.743z"
+    />
+  </svg>
+);
+
+const GlassInputWrapper = ({ children }: { children: React.ReactNode }) => (
+  <div className="rounded-2xl border border-border bg-foreground/5 backdrop-blur-sm transition-colors focus-within:border-[#af431d]  focus-within:bg-[#e9c892]/30">
+    {children}
+  </div>
+)
 
 const Register = () => {
-  return (
-    <div>Register</div>
-  )
-}
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [name, setName] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
+  const [username, setUsername] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [confirmPassword, setConfirmPassword] = useState<string>("");
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [showConfirm, setShowConfirm] = useState<boolean>(false);
 
-export default Register
+  const heroImageSrc =
+    "https://images.unsplash.com/photo-1642615835477-d303d7dc9ee9?w=2160&q=80";
+  const router = useRouter();
+
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    if (password !== confirmPassword) {
+      setPassword("");
+      setConfirmPassword("");
+      setIsLoading(false);
+      toast.error("As senhas devem coincidir.");
+      return;
+    }
+
+    if (!name || !email || !username || !password || !confirmPassword) {
+      toast.error("Preencha todos os campos.");
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const message = authService.register({ name, username, password, email });
+      toast.success((await message).data);
+      setTimeout(() => {
+        router.push("/signin");
+      }, 1000);
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  function onGoogleSignUp() {
+    // acione seu fluxo OAuth
+    toast.message("Google Sign-In", { description: "Indo para o OAuth..." });
+  }
+
+  return (
+    <div className="h-[100dvh] flex flex-col md:flex-row font-geist w-[100dvw]">
+      {/* Coluna esquerda: formulário */}
+      <section className="flex-1 flex items-center justify-center p-8">
+        <div className="w-full max-w-md">
+          <div className="flex flex-col gap-6">
+            <h1 className="animate-element animate-delay-100 text-4xl md:text-5xl font-semibold leading-tight">
+              <span className="font-light text-foreground tracking-tighter">
+                Crie sua conta
+              </span>
+            </h1>
+            <p className="animate-element animate-delay-200 text-muted-foreground">
+              Comece sua jornada com a gente em poucos passos.
+            </p>
+
+            <form className="space-y-5" onSubmit={handleRegister}>
+              {/* Username */}
+              <div className="animate-element animate-delay-250">
+                <label className="text-sm font-medium text-muted-foreground">
+                  Nome de usuário
+                </label>
+                <GlassInputWrapper>
+                  <input
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    type="text"
+                    placeholder="Seu Nome de Usuário"
+                    className="w-full bg-transparent text-sm p-4 rounded-2xl focus:outline-none"
+                    required
+                  />
+                </GlassInputWrapper>
+              </div>
+
+              {/* Name */}
+              <div className="animate-element animate-delay-300">
+                <label className="text-sm font-medium text-muted-foreground">
+                  Nome
+                </label>
+                <GlassInputWrapper>
+                  <input
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    type="text"
+                    placeholder="Seu Nome"
+                    className="w-full bg-transparent text-sm p-4 rounded-2xl focus:outline-none"
+                    required
+                  />
+                </GlassInputWrapper>
+              </div>
+
+              {/* Email */}
+              <div className="animate-element animate-delay-350">
+                <label className="text-sm font-medium text-muted-foreground">
+                  Email
+                </label>
+                <GlassInputWrapper>
+                  <input
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    type="email"
+                    placeholder="seu@email.com"
+                    className="w-full bg-transparent text-sm p-4 rounded-2xl focus:outline-none"
+                  />
+                </GlassInputWrapper>
+              </div>
+
+              {/* Password */}
+              <div className="animate-element animate-delay-400">
+                <label className="text-sm font-medium text-muted-foreground">
+                  Senha
+                </label>
+                <GlassInputWrapper>
+                  <div className="relative">
+                    <input
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Crie uma senha"
+                      className="w-full bg-transparent text-sm p-4 pr-12 rounded-2xl focus:outline-none"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((s) => !s)}
+                      className="absolute inset-y-0 right-3 flex items-center"
+                      aria-label={
+                        showPassword ? "Ocultar senha" : "Mostrar senha"
+                      }
+                    >
+                      {showPassword ? (
+                        <EyeOff className="w-5 h-5 text-muted-foreground hover:text-foreground transition-colors" />
+                      ) : (
+                        <Eye className="w-5 h-5 text-muted-foreground hover:text-foreground transition-colors" />
+                      )}
+                    </button>
+                  </div>
+                </GlassInputWrapper>
+              </div>
+
+              {/* Confirm Password */}
+              <div className="animate-element animate-delay-450">
+                <label className="text-sm font-medium text-muted-foreground">
+                  Confirmar senha
+                </label>
+                <GlassInputWrapper>
+                  <div className="relative">
+                    <input
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      type={showConfirm ? "text" : "password"}
+                      placeholder="Repita a senha"
+                      className="w-full bg-transparent text-sm p-4 pr-12 rounded-2xl focus:outline-none"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirm((s) => !s)}
+                      className="absolute inset-y-0 right-3 flex items-center"
+                      aria-label={
+                        showConfirm
+                          ? "Ocultar confirmação"
+                          : "Mostrar confirmação"
+                      }
+                    >
+                      {showConfirm ? (
+                        <EyeOff className="w-5 h-5 text-muted-foreground hover:text-foreground transition-colors" />
+                      ) : (
+                        <Eye className="w-5 h-5 text-muted-foreground hover:text-foreground transition-colors" />
+                      )}
+                    </button>
+                  </div>
+                </GlassInputWrapper>
+              </div>
+
+              {/* Submit */}
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="animate-element cursor-pointer animate-delay-550 w-full rounded-2xl bg-primary py-4 font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
+              >
+                {isLoading ? (
+                  <span className="inline-flex items-center gap-2">
+                    <LoaderCircle className="animate-spin" />
+                    Cadastrando...
+                  </span>
+                ) : (
+                  "Cadastrar"
+                )}
+              </button>
+            </form>
+
+            {/* Divider */}
+            <div className="animate-element animate-delay-650 relative flex items-center justify-center">
+              <span className="w-full border-t border-border"></span>
+              <span className="px-4 text-sm text-muted-foreground bg-[#fff8e1] not-only:absolute">
+                Ou continue com
+              </span>
+            </div>
+
+            {/* Google */}
+            <button
+              onClick={onGoogleSignUp}
+              className="animate-element cursor-pointer animate-delay-700 w-full flex items-center justify-center gap-3 border border-border rounded-2xl py-4 hover:bg-secondary transition-colors"
+            >
+              <GoogleIcon />
+              Cadastrar com Google
+            </button>
+
+            {/* Footer */}
+            <p className="animate-element animate-delay-800 text-center text-sm text-muted-foreground">
+              Já possui uma conta?{" "}
+              <Link
+                href="/signin"
+                className="text-violet-400 hover:underline transition-colors"
+              >
+                Entrar
+              </Link>
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {heroImageSrc && (
+        <section className="hidden md:block flex-1 relative p-4">
+          <div
+            className="animate-slide-right animate-delay-300 absolute inset-4 rounded-3xl bg-cover bg-center"
+            style={{ backgroundImage: `url(${heroImageSrc})` }}
+          />
+        </section>
+      )}
+    </div>
+  );
+};
+
+export default Register;
