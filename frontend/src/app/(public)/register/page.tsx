@@ -37,10 +37,10 @@ const GoogleIcon = () => (
 );
 
 const GlassInputWrapper = ({ children }: { children: React.ReactNode }) => (
-  <div className="rounded-2xl border border-border bg-foreground/5 backdrop-blur-sm transition-colors focus-within:border-[#af431d]  focus-within:bg-[#e9c892]/30">
+  <div className="rounded-2xl border border-border bg-foreground/5 backdrop-blur-sm transition-colors focus-within:border-primary  focus-within:bg-primary-foreground/30">
     {children}
   </div>
-)
+);
 
 const Register = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -245,7 +245,7 @@ const Register = () => {
             {/* Divider */}
             <div className="animate-element animate-delay-650 relative flex items-center justify-center">
               <span className="w-full border-t border-border"></span>
-              <span className="px-4 text-sm text-muted-foreground bg-[#fff8e1] not-only:absolute">
+              <span className="px-4 text-sm text-muted-foreground bg-background not-only:absolute">
                 Ou continue com
               </span>
             </div>
@@ -253,7 +253,7 @@ const Register = () => {
             {/* Google */}
             <button
               onClick={onGoogleSignUp}
-              className="animate-element cursor-pointer animate-delay-700 w-full flex items-center justify-center gap-3 border border-border rounded-2xl py-4 hover:bg-secondary transition-colors"
+              className="animate-element cursor-pointer animate-delay-700 w-full flex items-center justify-center gap-3 border border-border rounded-2xl py-4 hover:bg-secondary text-secondary hover:text-background transition-colors"
             >
               <GoogleIcon />
               Cadastrar com Google
@@ -264,7 +264,7 @@ const Register = () => {
               Já possui uma conta?{" "}
               <Link
                 href="/signin"
-                className="text-violet-400 hover:underline transition-colors"
+                className="text-primary hover:underline transition-colors"
               >
                 Entrar
               </Link>

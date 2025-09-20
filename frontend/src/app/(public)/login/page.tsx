@@ -36,7 +36,7 @@ const GoogleIcon = () => (
 // --- SUB-COMPONENTS ---
 
 const GlassInputWrapper = ({ children }: { children: React.ReactNode }) => (
-  <div className="rounded-2xl border border-border bg-foreground/5 backdrop-blur-sm transition-colors focus-within:border-[#af431d]  focus-within:bg-[#e9c892]/30">
+  <div className="rounded-2xl border border-border bg-foreground/5 backdrop-blur-sm transition-colors focus-within:border-primary focus-within:bg-primary-foreground/30">
     {children}
   </div>
 );
@@ -160,7 +160,7 @@ const Login = () => {
                     e.preventDefault();
                     onResetPassword();
                   }}
-                  className="hover:underline text-violet-400 transition-colors"
+                  className="hover:underline text-primary transition-colors"
                 >
                   Esqueci a senha
                 </a>
@@ -169,7 +169,7 @@ const Login = () => {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="animate-element cursor-pointer animate-delay-600 w-full rounded-2xl bg-primary py-4 font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
+                className="animate-element cursor-pointer animate-delay-600 w-full rounded-2xl bg-primary py-4 font-medium text-[#fff8e1] hover:bg-primary/90 transition-colors"
               >
                 {isLoading ? (
                   <span className="inline-flex items-center gap-2">
@@ -182,16 +182,16 @@ const Login = () => {
               </button>
             </form>
 
-            <div className="animate-element animate-delay-700 relative flex items-center justify-center">
+            <div className="animate-element animate-delay-650 relative flex items-center justify-center">
               <span className="w-full border-t border-border"></span>
-              <span className="px-4 text-sm text-muted-foreground bg-[#fff8e1] absolute">
+              <span className="px-4 text-sm text-muted-foreground bg-background not-only:absolute">
                 Ou continue com
               </span>
             </div>
 
             <button
               onClick={onGoogleSignIn}
-              className="animate-element cursor-pointer animate-delay-800 w-full flex items-center justify-center gap-3 border border-border rounded-2xl py-4 hover:bg-secondary transition-colors"
+              className="animate-element cursor-pointer animate-delay-700 w-full flex items-center justify-center gap-3 border border-border rounded-2xl py-4 hover:bg-secondary text-secondary hover:text-background transition-colors"
             >
               <GoogleIcon />
               Entrar com Google
@@ -201,7 +201,7 @@ const Login = () => {
               Novo por aqui?{" "}
               <Link
                 href="/register"
-                className="text-violet-400 hover:underline transition-colors"
+                className="text-primary hover:underline transition-colors"
               >
                 Criar conta
               </Link>
