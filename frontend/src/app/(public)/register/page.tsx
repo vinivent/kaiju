@@ -244,7 +244,7 @@ const Register = () => {
 
             {/* Divider */}
             <div className="animate-element animate-delay-650 relative flex items-center justify-center">
-              <span className="w-full border-t border-border"></span>
+              <span className="w-full border-t border-border bg-background "></span>
               <span className="px-4 text-sm text-muted-foreground bg-background not-only:absolute">
                 Ou continue com
               </span>
