@@ -1,6 +1,9 @@
 package com.cesar.kaiju.enums;
 
 public enum UserRole {
-    USER,
-    ADMIN
+    USER,               // Regular platform user
+    VETERINARIAN,       // Verified veterinarian professional
+    SELLER,             // Product seller/vendor
+    AUTHOR,             // Article author/content creator
+    ADMIN               // Platform administrator
 }
