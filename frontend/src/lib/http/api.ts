@@ -1,14 +1,9 @@
 import axios from "axios";
 
-export interface ApiResponse<T> {
-  data: T | null;
-  error?: string;
-};
-
-const apiClient = axios.create({
+const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
   headers: { "Content-Type": "application/json" },
   withCredentials: true,
 });
 
-export default apiClient;
+export default api;
