@@ -242,23 +242,6 @@ const Register = () => {
               </button>
             </form>
 
-            {/* Divider */}
-            <div className="animate-element animate-delay-650 relative flex items-center justify-center">
-              <span className="w-full border-t border-border bg-background "></span>
-              <span className="px-4 text-sm text-muted-foreground bg-background not-only:absolute">
-                Ou continue com
-              </span>
-            </div>
-
-            {/* Google */}
-            <button
-              onClick={onGoogleSignUp}
-              className="animate-element cursor-pointer animate-delay-700 w-full flex items-center justify-center gap-3 border border-border rounded-2xl py-4 hover:bg-secondary text-secondary hover:text-background transition-colors"
-            >
-              <GoogleIcon />
-              Cadastrar com Google
-            </button>
-
             {/* Footer */}
             <p className="animate-element animate-delay-800 text-center text-sm text-muted-foreground">
               Já possui uma conta?{" "}
