@@ -47,12 +47,12 @@ export function HeroSection() {
                         </div>
 
                         <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                            <Button size="lg" className="w-full sm:w-auto rounded-full text-base px-8 shadow-lg hover:shadow-xl transition-all group hover-scale">
+                            <Button size="lg" className="w-full sm:w-auto cursor-pointer rounded-full text-base px-8 shadow-lg hover:shadow-xl transition-all group hover-scale">
                                 Começar Grátis
                                 <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                             </Button>
 
-                            <Button size="lg" variant="outline" className="w-full sm:w-auto rounded-full text-base px-8 hover-scale">
+                            <Button size="lg" variant="outline" className="w-full cursor-pointer sm:w-auto rounded-full text-base px-8 hover-scale">
                                 Explorar Produtos
                             </Button>
                         </div>

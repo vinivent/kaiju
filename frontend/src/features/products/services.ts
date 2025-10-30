@@ -16,7 +16,34 @@ export const productService = {
    * Search products with filters and pagination
    */
   async searchProducts(params: ProductSearchParams): Promise<PaginatedResponse<Product>> {
-    const response = await api.get<PaginatedResponse<Product>>(`${BASE_PATH}/search`, { params });
+    const { query, sortBy, sortDirection, ...rest } = params;
+
+    const mappedParams = {
+      keyword: query,
+      ...rest,
+      sort: sortBy ? `${sortBy},${sortDirection ?? 'desc'}` : undefined,
+    };
+
+    const response = await api.get<PaginatedResponse<Product>>('/products/search', {
+      params: mappedParams,
+    });
+    return response.data;
+  },
+
+  /**
+ * Get all products with filters
+ */
+  async getAllProducts(params: ProductSearchParams): Promise<PaginatedResponse<Product>> {
+    const { sortBy, sortDirection, ...rest } = params;
+
+    const mappedParams = {
+      ...rest,
+      sort: sortBy ? `${sortBy},${sortDirection ?? 'desc'}` : undefined,
+    };
+
+    const response = await api.get<PaginatedResponse<Product>>('/products', {
+      params: mappedParams,
+    });
     return response.data;
   },
 

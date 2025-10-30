@@ -10,7 +10,7 @@ const Footer = () => {
           {/* Brand */}
           <div className="space-y-4">
             <div className="flex items-center space-x-2">
-              <Image src={"/assets/kaiju.png"} height={60} width={60} alt="Kaiju Logo"/>
+              <Image src={"/assets/kaiju.png"} height={60} width={60} alt="Kaiju Logo" />
             </div>
             <p className="text-sm text-muted-foreground">
               Sua plataforma completa para cuidados com répteis
@@ -21,10 +21,10 @@ const Footer = () => {
           <div>
             <h3 className="mb-4 font-semibold">Produtos</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><Link href="/produtos" className="hover:text-foreground transition-colors">Alimentação</Link></li>
-              <li><Link href="/produtos" className="hover:text-foreground transition-colors">Habitat</Link></li>
-              <li><Link href="/produtos" className="hover:text-foreground transition-colors">Aquecimento</Link></li>
-              <li><Link href="/produtos" className="hover:text-foreground transition-colors">Iluminação</Link></li>
+              <li><Link href="/produtos?category=FOOD" className="hover:text-foreground transition-colors">Alimentação</Link></li>
+              <li><Link href="/produtos?category=HABITAT" className="hover:text-foreground transition-colors">Habitat</Link></li>
+              <li><Link href="/produtos?category=HEATING" className="hover:text-foreground transition-colors">Aquecimento</Link></li>
+              <li><Link href="/produtos?category=LIGHTING" className="hover:text-foreground transition-colors">Iluminação</Link></li>
             </ul>
           </div>
 
@@ -41,16 +41,16 @@ const Footer = () => {
           <div>
             <h3 className="mb-4 font-semibold">Conecte-se</h3>
             <div className="flex space-x-4">
-              <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
+              <a href="https://github.com/vinivent" className="text-muted-foreground hover:text-foreground transition-colors">
                 <Facebook className="h-5 w-5" />
               </a>
-              <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
+              <a href="https://github.com/vinivent" className="text-muted-foreground hover:text-foreground transition-colors">
                 <Instagram className="h-5 w-5" />
               </a>
-              <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
+              <a href="https://github.com/vinivent" className="text-muted-foreground hover:text-foreground transition-colors">
                 <Twitter className="h-5 w-5" />
               </a>
-              <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
+              <a href="https://github.com/vinivent" className="text-muted-foreground hover:text-foreground transition-colors">
                 <Mail className="h-5 w-5" />
               </a>
             </div>

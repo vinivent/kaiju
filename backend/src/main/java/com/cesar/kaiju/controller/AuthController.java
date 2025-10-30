@@ -45,6 +45,7 @@ public class AuthController {
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString()).body("Login realizado com sucesso.");
     }
 
+    @PostMapping("/logout")
     public ResponseEntity<String> logout() {
         ResponseCookie cookie = ResponseCookie.from("token", "")
                 .httpOnly(true)

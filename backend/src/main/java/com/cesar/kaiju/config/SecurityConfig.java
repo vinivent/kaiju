@@ -30,10 +30,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/api/auth/**",
-                                "/api/user/forgot-password",
-                                "api/user/reset-password",
-                                "/api/user/reset-password/validate",
-                                "/api/user/resend-verification").permitAll()
+                                "/api/user/**",
+                                "api/products/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session

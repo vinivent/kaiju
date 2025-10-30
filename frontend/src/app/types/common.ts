@@ -8,13 +8,13 @@ export enum UserRole {
 
 export enum ProductCategory {
   FOOD = 'FOOD',
-  SUPPLEMENTS = 'SUPPLEMENTS',
   HABITAT = 'HABITAT',
   HEATING = 'HEATING',
   LIGHTING = 'LIGHTING',
   ACCESSORIES = 'ACCESSORIES',
   HEALTHCARE = 'HEALTHCARE',
   BOOKS = 'BOOKS',
+  DECORATION = 'DECORATION'
 }
 
 export enum ProductStatus {

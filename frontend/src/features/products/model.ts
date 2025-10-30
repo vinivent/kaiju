@@ -1,18 +1,19 @@
 import { ProductCategory, ProductStatus } from "@/app/types/common";
 
 export interface Product {
-  id: number;
+  productId: string;
   name: string;
   description: string;
   category: ProductCategory;
   price: number;
-  currency: string;
-  imageUrl?: string;
-  stock: number;
-  sellerId: number;
-  sellerName: string;
   status: ProductStatus;
-  featured: boolean;
+  images: string[];
+  stockQuantity: number;
+  sellerId: string;
+  sellerName: string;
+  brand?: string;
+  manufacturer?: string;
+  tags?: string[];
   rating: number;
   reviewCount: number;
   createdAt: string;
@@ -35,9 +36,8 @@ export interface CreateProductRequest {
   description: string;
   category: ProductCategory;
   price: number;
-  currency: string;
-  imageUrl?: string;
-  stock: number;
+  images?: string[];
+  stockQuantity: number;
 }
 
 export interface UpdateProductRequest {
@@ -45,19 +45,14 @@ export interface UpdateProductRequest {
   description?: string;
   category?: ProductCategory;
   price?: number;
-  imageUrl?: string;
-  stock?: number;
+  images?: string[];
+  stockQuantity?: number;
   status?: ProductStatus;
-  featured?: boolean;
 }
 
 export interface ProductSearchParams {
   query?: string;
   category?: ProductCategory;
-  minPrice?: number;
-  maxPrice?: number;
-  sellerId?: number;
-  featured?: boolean;
   status?: ProductStatus;
   page?: number;
   size?: number;

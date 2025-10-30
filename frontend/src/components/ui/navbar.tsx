@@ -1,28 +1,53 @@
-import { useState } from "react";
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Menu, X, ShoppingCart, User } from "lucide-react";
 import { Button } from "./button";
 import { ThemeToggle } from "./theme-toggle";
-import Image from "next/image";
 import { useTheme } from "next-themes";
+import { Badge } from "@/components/ui/badge";
+import { CartModal } from "./CartModal";
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
+    const [isCartOpen, setIsCartOpen] = useState(false);
+    const [mounted, setMounted] = useState(false);
     const { theme } = useTheme();
+
+    useEffect(() => setMounted(true), []);
+
     const navLinks = [
-        { name: "Produtos", path: "/produtos" },
+        { name: "Produtos", path: "/produtos?category=ALL" },
         { name: "Veterinários", path: "/veterinarios" },
         { name: "Locais", path: "/locais" },
         { name: "Artigos", path: "/artigos" },
     ];
 
+    // Mock de itens no carrinho (substitua pelo estado global futuramente)
+    const [cartItems] = useState([
+        { id: "1", name: "Ração para Répteis", price: 59.9, quantity: 1, image: "/assets/sample1.jpg" },
+        { id: "2", name: "Lâmpada UVB 100W", price: 129.9, quantity: 2, image: "/assets/sample2.jpg" },
+    ]);
+
+    const itemCount = cartItems.reduce((sum, i) => sum + i.quantity, 0);
+
     return (
         <nav className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-lg">
             <div className="container mx-auto px-4">
-                <div className="flex h-16 items-center justify-between">
+                <div className="flex h-16 items-center justify-between relative">
                     {/* Logo */}
                     <Link href="/" className="flex items-center space-x-2">
-                        <Image src={theme === "dark" ? "/assets/LogoBranca.png" : "/assets/LogoPreta.png"} width={70} height={70} alt={"logo"} />
+                        {mounted && (
+                            <Image
+                                src={theme === "dark" ? "/assets/LogoBranca.png" : "/assets/LogoPreta.png"}
+                                width={70}
+                                height={70}
+                                alt="logo"
+                                priority
+                            />
+                        )}
                     </Link>
 
                     {/* Desktop Navigation */}
@@ -39,29 +64,82 @@ const Navbar = () => {
                     </div>
 
                     {/* Desktop Actions */}
-                    <div className="hidden items-center space-x-4 md:flex">
+                    <div className="hidden items-center space-x-4 md:flex relative">
                         <ThemeToggle />
-                        <Button variant="ghost" size="icon">
-                            <ShoppingCart className="h-5 w-5" />
-                        </Button>
+
+                        {/* Carrinho (Desktop) */}
+                        <div className="relative">
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="cursor-pointer relative"
+                                onClick={() => setIsCartOpen((prev) => !prev)}
+                            >
+                                <ShoppingCart className="h-5 w-5" />
+                                {itemCount > 0 && (
+                                    <Badge className="absolute -top-1 -right-1 h-4 w-4 flex items-center justify-center p-0 text-xs">
+                                        {itemCount}
+                                    </Badge>
+                                )}
+                            </Button>
+
+                            {isCartOpen && (
+                                <div className="absolute right-0 top-10">
+                                    <CartModal
+                                        items={cartItems}
+                                        onClose={() => setIsCartOpen(false)}
+                                        onCheckout={() => alert("Indo para checkout...")}
+                                    />
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Usuário */}
                         <Link href="/login">
-                            <Button variant="ghost" size="icon">
+                            <Button variant="ghost" className="cursor-pointer" size="icon">
                                 <User className="h-5 w-5" />
                             </Button>
                         </Link>
+
                         <Link href="/register">
-                            <Button className="rounded-full">Criar Conta</Button>
+                            <Button className="rounded-full cursor-pointer">Criar Conta</Button>
                         </Link>
                     </div>
 
                     {/* Mobile Menu Button */}
                     <div className="md:hidden flex items-center gap-2">
                         <ThemeToggle />
-                        <button
-                            onClick={() => setIsOpen(!isOpen)}
-                            aria-label="Toggle menu"
-                        >
-                            {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+
+                        {/* Carrinho (Mobile) */}
+                        <div className="relative">
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="cursor-pointer relative"
+                                onClick={() => setIsCartOpen((prev) => !prev)}
+                            >
+                                <ShoppingCart className="h-5 w-5" />
+                                {itemCount > 0 && (
+                                    <Badge className="absolute -top-1 -right-1 h-4 w-4 flex items-center justify-center p-0 text-xs">
+                                        {itemCount}
+                                    </Badge>
+                                )}
+                            </Button>
+
+                            {isCartOpen && (
+                                <div className="absolute right-0 top-10">
+                                    <CartModal
+                                        items={cartItems}
+                                        onClose={() => setIsCartOpen(false)}
+                                        onCheckout={() => alert("Indo para checkout...")}
+                                    />
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Botão menu */}
+                        <button onClick={() => setIsOpen(!isOpen)} aria-label="Toggle menu">
+                            {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
                         </button>
                     </div>
                 </div>
