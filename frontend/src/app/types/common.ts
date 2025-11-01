@@ -1,3 +1,5 @@
+import { UUID } from "crypto";
+
 export enum UserRole {
   USER = 'USER',
   VETERINARIAN = 'VETERINARIAN',
@@ -95,4 +97,21 @@ export interface ApiResponse<T> {
   data: T | null;
   error?: string;
 };
+
+export enum UserSituation {
+  VERIFIED = 'VERIFIED',
+  INACTIVE = 'INACTIVE',
+  PENDING = 'PENDING',
+  BLOCKED = 'BLOCKED'
+}
+
+export interface User {
+  id: UUID,
+  username: string,
+  email: string,
+  name: string,
+  avatar: string,
+  UserSituation: UserSituation,
+  createdAt: Date
+}
 

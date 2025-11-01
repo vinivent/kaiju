@@ -9,14 +9,18 @@ import { ThemeToggle } from "./theme-toggle";
 import { useTheme } from "next-themes";
 import { Badge } from "@/components/ui/badge";
 import { CartModal } from "./CartModal";
+import { useUser } from "@/contexts/UserContext";
 
-const Navbar = () => {
+const ProtectedNav = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [isCartOpen, setIsCartOpen] = useState(false);
     const [mounted, setMounted] = useState(false);
     const { theme } = useTheme();
+    const { user } = useUser();
 
     useEffect(() => setMounted(true), []);
+
+    useEffect(() => console.log(user), []);
 
     const navLinks = [
         { name: "Produtos", path: "/produtos?category=ALL" },
@@ -38,7 +42,7 @@ const Navbar = () => {
             <div className="container mx-auto px-4">
                 <div className="flex h-16 items-center justify-between relative">
                     {/* Logo */}
-                    <Link href="/" className="flex items-center space-x-2">
+                    <Link href="/home" className="flex items-center space-x-2">
                         {mounted && (
                             <Image
                                 src={theme === "dark" ? "/assets/LogoBranca.png" : "/assets/LogoPreta.png"}
@@ -96,11 +100,13 @@ const Navbar = () => {
 
                         {/* Usuário */}
                         <Link href="/login">
-                            <Button variant="outline" className="rounded-full cursor-pointer">Fazer Login</Button>
+                            <Button variant="ghost" className="cursor-pointer" size="icon">
+                                <User className="h-5 w-5" />
+                            </Button>
                         </Link>
 
                         <Link href="/register">
-                            <Button className="rounded-full cursor-pointer">Criar Conta</Button>
+                            {user !== null ? "" : <Button className="rounded-full cursor-pointer">Criar Conta</Button>}
                         </Link>
                     </div>
 
@@ -157,13 +163,10 @@ const Navbar = () => {
                                 </Link>
                             ))}
                             <div className="flex flex-col space-y-2 pt-4 border-t border-border">
-                                <Link href="/login" onClick={() => setIsOpen(false)}>
-                                    <Button variant="outline" className="w-full">
-                                        Entrar
+                                <Link href="/profile" onClick={() => setIsOpen(false)}>
+                                    <Button variant="outline" className="w-full cursor-pointer">
+                                        Meu Perfil
                                     </Button>
-                                </Link>
-                                <Link href="/register" onClick={() => setIsOpen(false)}>
-                                    <Button className="w-full">Criar Conta</Button>
                                 </Link>
                             </div>
                         </div>
@@ -174,4 +177,4 @@ const Navbar = () => {
     );
 };
 
-export default Navbar;
+export default ProtectedNav;

@@ -4,6 +4,7 @@ import "./globals.css";
 import { Toaster } from "sonner";
 import { ThemeProvider } from "next-themes";
 import LayoutWrapper from "@/components/LayoutWrapper";
+import { Providers } from "@/components/providers";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,8 +30,10 @@ export default function RootLayout({
     <html lang="en" className="dark" suppressHydrationWarning>
       <body className={`${geistMono.variable} antialiased bg-background`}>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
-          <Toaster position="top-right" />
-          <LayoutWrapper>{children}</LayoutWrapper>
+          <Providers>
+            <Toaster position="top-right" />
+            <LayoutWrapper>{children}</LayoutWrapper>
+          </Providers>
         </ThemeProvider>
       </body>
     </html>

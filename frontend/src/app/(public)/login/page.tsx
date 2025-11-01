@@ -5,6 +5,7 @@ import { Eye, EyeOff, LoaderCircle } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
 import { authService } from "@/features/auth/service";
+import { useRouter } from "next/navigation";
 
 // --- HELPER COMPONENTS (ICONS) ---
 
@@ -46,8 +47,10 @@ const GlassInputWrapper = ({ children }: { children: React.ReactNode }) => (
 const Login = () => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [email, setEmail] = useState<string>("");
+  const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+
+  const router = useRouter();
 
   const title = (
     <span className="font-light text-foreground tracking-tighter">
@@ -63,8 +66,9 @@ const Login = () => {
     setIsLoading(true);
 
     try {
-      const message = authService.login({ email, password });
+      const message = authService.login({ username: username, password });
       toast.success((await message).data);
+      router.push("/home");
     } catch (error: any) {
       console.error(error);
       toast.error(error.message);
@@ -72,11 +76,6 @@ const Login = () => {
       setIsLoading(false);
     }
   };
-
-  function onGoogleSignIn() {
-    console.log("Google Sign-In clicado");
-    // redirecione/inicie OAuth aqui
-  }
 
   function onResetPassword() {
     console.log("Reset password clicado");
@@ -103,9 +102,9 @@ const Login = () => {
                 </label>
                 <GlassInputWrapper>
                   <input
-                    name="email"
-                    type="email"
-                    onChange={(e) => setEmail(e.target.value)}
+                    name="username"
+                    type="text"
+                    onChange={(e) => setUsername(e.target.value)}
                     placeholder="Digite seu email"
                     className="w-full bg-transparent text-sm p-4 rounded-2xl focus:outline-none"
                     required
@@ -181,7 +180,7 @@ const Login = () => {
                 )}
               </button>
             </form>
-          
+
             <p className="animate-element animate-delay-900 text-center text-sm text-muted-foreground">
               Novo por aqui?{" "}
               <Link

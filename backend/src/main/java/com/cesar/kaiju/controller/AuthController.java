@@ -36,8 +36,8 @@ public class AuthController {
 
         ResponseCookie cookie = ResponseCookie.from("token", token)
                 .httpOnly(true)
-                .secure(true)
-                .path("/")
+                .secure(false)
+                .sameSite("Lax")
                 .maxAge(7 * 24 * 60 * 60)
                 .build();
 
@@ -49,9 +49,8 @@ public class AuthController {
     public ResponseEntity<String> logout() {
         ResponseCookie cookie = ResponseCookie.from("token", "")
                 .httpOnly(true)
-                .secure(true)
-                .sameSite("Strict")
-                .path("/")
+                .secure(false)
+                .sameSite("Lax")
                 .maxAge(0)
                 .build();
 
@@ -60,7 +59,7 @@ public class AuthController {
                 .body("Sessão Encerrada.");
     }
 
-    @GetMapping("/auth/session")
+    @GetMapping("/session")
     public ResponseEntity<?> validateSession(
             @CookieValue(name = "token", required = false) String token) {
         if (token == null || token.isBlank()) {
