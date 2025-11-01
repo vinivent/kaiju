@@ -47,9 +47,16 @@ public class HealthcareLocationController {
 
     @GetMapping("/search")
     public ResponseEntity<Page<HealthcareLocationResponseDTO>> searchLocations(
-            @RequestParam String keyword,
+            @RequestParam(required = false) String query,
+            @RequestParam(required = false) LocationType type,
+            @RequestParam(required = false) String city,
+            @RequestParam(required = false) String state,
+            @RequestParam(required = false) Boolean emergencyService,
+            @RequestParam(required = false) Boolean hours24,
+            @RequestParam(required = false) Boolean acceptsInsurance,
             Pageable pageable) {
-        Page<HealthcareLocationResponseDTO> locations = locationService.searchLocations(keyword, pageable);
+        Page<HealthcareLocationResponseDTO> locations = locationService.searchLocations(
+                query, type, city, state, emergencyService, hours24, acceptsInsurance, pageable);
         return ResponseEntity.ok(locations);
     }
 

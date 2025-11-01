@@ -48,9 +48,15 @@ public class VeterinarianController {
 
     @GetMapping("/search")
     public ResponseEntity<Page<VeterinarianResponseDTO>> searchVeterinarians(
-            @RequestParam String keyword,
+            @RequestParam(required = false) String query,
+            @RequestParam(required = false) VeterinarianSpecialization specialty,
+            @RequestParam(required = false) String city,
+            @RequestParam(required = false) String state,
+            @RequestParam(required = false) Integer minExperience,
+            @RequestParam(required = false) Boolean onlineConsultation,
             Pageable pageable) {
-        Page<VeterinarianResponseDTO> vets = veterinarianService.searchVeterinarians(keyword, pageable);
+        Page<VeterinarianResponseDTO> vets = veterinarianService.searchVeterinarians(
+                query, specialty, city, state, minExperience, onlineConsultation, pageable);
         return ResponseEntity.ok(vets);
     }
 

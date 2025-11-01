@@ -60,7 +60,7 @@ export const productService = {
   /**
    * Get product details by ID
    */
-  async getProductById(id: number): Promise<Product> {
+  async getProductById(id: string): Promise<Product> {
     const response = await api.get<Product>(`${BASE_PATH}/${id}`);
     return response.data;
   },
@@ -76,7 +76,7 @@ export const productService = {
   /**
    * Update product (requires SELLER role and ownership)
    */
-  async updateProduct(id: number, data: UpdateProductRequest): Promise<Product> {
+  async updateProduct(id: string, data: UpdateProductRequest): Promise<Product> {
     const response = await api.put<Product>(`${BASE_PATH}/${id}`, data);
     return response.data;
   },
@@ -84,14 +84,14 @@ export const productService = {
   /**
    * Delete product (requires SELLER role and ownership)
    */
-  async deleteProduct(id: number): Promise<void> {
+  async deleteProduct(id: string): Promise<void> {
     await api.delete(`${BASE_PATH}/${id}`);
   },
 
   /**
    * Get products by seller
    */
-  async getProductsBySeller(sellerId: number, page = 0, size = 10): Promise<PaginatedResponse<Product>> {
+  async getProductsBySeller(sellerId: string, page = 0, size = 10): Promise<PaginatedResponse<Product>> {
     const response = await api.get<PaginatedResponse<Product>>(`${BASE_PATH}/seller/${sellerId}`, {
       params: { page, size },
     });
@@ -101,7 +101,7 @@ export const productService = {
   /**
    * Get product reviews
    */
-  async getProductReviews(productId: number, page = 0, size = 10): Promise<PaginatedResponse<ProductReview>> {
+  async getProductReviews(productId: string, page = 0, size = 10): Promise<PaginatedResponse<ProductReview>> {
     const response = await api.get<PaginatedResponse<ProductReview>>(`${BASE_PATH}/${productId}/reviews`, {
       params: { page, size },
     });
@@ -111,7 +111,7 @@ export const productService = {
   /**
    * Create product review (requires authentication)
    */
-  async createReview(productId: number, data: CreateReviewRequest): Promise<ProductReview> {
+  async createReview(productId: string, data: CreateReviewRequest): Promise<ProductReview> {
     const response = await api.post<ProductReview>(`${BASE_PATH}/${productId}/reviews`, data);
     return response.data;
   },
@@ -119,7 +119,7 @@ export const productService = {
   /**
    * Mark review as helpful
    */
-  async markReviewHelpful(productId: number, reviewId: number): Promise<void> {
+  async markReviewHelpful(productId: string, reviewId: number): Promise<void> {
     await api.post(`${BASE_PATH}/${productId}/reviews/${reviewId}/helpful`);
   },
 };

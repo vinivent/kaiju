@@ -1,7 +1,8 @@
 import { ProductCategory, ProductStatus } from "@/app/types/common";
+import { UUID } from "crypto";
 
 export interface Product {
-  productId: string;
+  productId: UUID;
   name: string;
   description: string;
   category: ProductCategory;
@@ -22,8 +23,8 @@ export interface Product {
 
 export interface ProductReview {
   id: number;
-  productId: number;
-  userId: number;
+  productId: string;
+  userId: string; 
   userName: string;
   rating: number;
   comment: string;

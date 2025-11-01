@@ -2,11 +2,15 @@ package com.cesar.kaiju.service;
 
 import com.cesar.kaiju.dto.ProductRequestDTO;
 import com.cesar.kaiju.dto.ProductResponseDTO;
+import com.cesar.kaiju.dto.ProductReviewRequestDTO;
+import com.cesar.kaiju.dto.ProductReviewResponseDTO;
 import com.cesar.kaiju.enums.ProductCategory;
 import com.cesar.kaiju.enums.ProductStatus;
 import com.cesar.kaiju.model.Product;
+import com.cesar.kaiju.model.ProductReview;
 import com.cesar.kaiju.model.User;
 import com.cesar.kaiju.repository.ProductRepository;
+import com.cesar.kaiju.repository.ProductReviewRepository;
 import com.cesar.kaiju.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
@@ -26,10 +30,12 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
+    private final ProductReviewRepository productReviewRepository;
 
-    public ProductService(ProductRepository productRepository, UserRepository userRepository) {
+    public ProductService(ProductRepository productRepository, UserRepository userRepository, ProductReviewRepository productReviewRepository) {
         this.productRepository = productRepository;
         this.userRepository = userRepository;
+        this.productReviewRepository = productReviewRepository;
     }
 
     public ProductResponseDTO createProduct(ProductRequestDTO request) {
@@ -180,6 +186,89 @@ public class ProductService {
                 product.getReviewCount(),
                 product.getCreatedAt(),
                 product.getUpdatedAt()
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public Page<ProductReviewResponseDTO> getProductReviews(UUID productId, Pageable pageable) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new EntityNotFoundException("Product not found with id: " + productId));
+        
+        Page<ProductReview> reviews = productReviewRepository.findByProduct(product, pageable);
+        return reviews.map(this::toReviewResponseDTO);
+    }
+
+    public ProductReviewResponseDTO createProductReview(UUID productId, ProductReviewRequestDTO request) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new EntityNotFoundException("Product not found with id: " + productId));
+        
+        User currentUser = getCurrentUser();
+        
+        // Check if user already reviewed this product
+        boolean alreadyReviewed = productReviewRepository.findByProduct_ProductId(productId, Pageable.unpaged())
+                .getContent()
+                .stream()
+                .anyMatch(review -> review.getUser().getUserId().equals(currentUser.getUserId()));
+        
+        if (alreadyReviewed) {
+            throw new IllegalStateException("You have already reviewed this product");
+        }
+        
+        ProductReview review = new ProductReview();
+        review.setProduct(product);
+        review.setUser(currentUser);
+        review.setRating(request.rating());
+        review.setComment(request.comment());
+        
+        ProductReview savedReview = productReviewRepository.save(review);
+        
+        // Update product rating and review count
+        updateProductRating(product);
+        
+        return toReviewResponseDTO(savedReview);
+    }
+
+    public void markReviewHelpful(UUID productId, Long reviewId) {
+        ProductReview review = productReviewRepository.findById(reviewId)
+                .orElseThrow(() -> new EntityNotFoundException("Review not found with id: " + reviewId));
+        
+        if (!review.getProduct().getProductId().equals(productId)) {
+            throw new IllegalArgumentException("Review does not belong to this product");
+        }
+        
+        review.setHelpful(review.getHelpful() + 1);
+        productReviewRepository.save(review);
+    }
+
+    private void updateProductRating(Product product) {
+        var allReviews = productReviewRepository.findByProduct(product, Pageable.unpaged());
+        
+        if (allReviews.isEmpty()) {
+            product.setRating(0.0);
+            product.setReviewCount(0);
+        } else {
+            double averageRating = allReviews.getContent().stream()
+                    .mapToInt(ProductReview::getRating)
+                    .average()
+                    .orElse(0.0);
+            
+            product.setRating(averageRating);
+            product.setReviewCount(allReviews.getContent().size());
+        }
+        
+        productRepository.save(product);
+    }
+
+    private ProductReviewResponseDTO toReviewResponseDTO(ProductReview review) {
+        return new ProductReviewResponseDTO(
+                review.getId(),
+                review.getProduct().getProductId(),
+                review.getUser().getUserId(),
+                review.getUser().getName(),
+                review.getRating(),
+                review.getComment(),
+                review.getHelpful(),
+                review.getCreatedAt()
         );
     }
 

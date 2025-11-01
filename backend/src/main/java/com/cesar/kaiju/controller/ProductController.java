@@ -2,9 +2,10 @@ package com.cesar.kaiju.controller;
 
 import com.cesar.kaiju.dto.ProductRequestDTO;
 import com.cesar.kaiju.dto.ProductResponseDTO;
+import com.cesar.kaiju.dto.ProductReviewRequestDTO;
+import com.cesar.kaiju.dto.ProductReviewResponseDTO;
 import com.cesar.kaiju.enums.ProductCategory;
 import com.cesar.kaiju.enums.ProductStatus;
-import com.cesar.kaiju.model.Product;
 import com.cesar.kaiju.service.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -98,5 +99,29 @@ public class ProductController {
     public ResponseEntity<Void> deleteProduct(@PathVariable UUID id) {
         productService.deleteProduct(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{id}/reviews")
+    public ResponseEntity<Page<ProductReviewResponseDTO>> getProductReviews(
+            @PathVariable UUID id,
+            Pageable pageable) {
+        Page<ProductReviewResponseDTO> reviews = productService.getProductReviews(id, pageable);
+        return ResponseEntity.ok(reviews);
+    }
+
+    @PostMapping("/{id}/reviews")
+    public ResponseEntity<ProductReviewResponseDTO> createProductReview(
+            @PathVariable UUID id,
+            @Valid @RequestBody ProductReviewRequestDTO request) {
+        ProductReviewResponseDTO review = productService.createProductReview(id, request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(review);
+    }
+
+    @PostMapping("/{id}/reviews/{reviewId}/helpful")
+    public ResponseEntity<Void> markReviewHelpful(
+            @PathVariable UUID id,
+            @PathVariable Long reviewId) {
+        productService.markReviewHelpful(id, reviewId);
+        return ResponseEntity.ok().build();
     }
 }

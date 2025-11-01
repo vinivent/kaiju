@@ -56,9 +56,12 @@ public class ArticleController {
 
     @GetMapping("/search")
     public ResponseEntity<Page<ArticleResponseDTO>> searchArticles(
-            @RequestParam String keyword,
+            @RequestParam(required = false) String query,
+            @RequestParam(required = false) ArticleCategory category,
+            @RequestParam(required = false) UUID authorId,
+            @RequestParam(required = false) ArticleStatus status,
             Pageable pageable) {
-        Page<ArticleResponseDTO> articles = articleService.searchArticles(keyword, pageable);
+        Page<ArticleResponseDTO> articles = articleService.searchArticles(query, category, authorId, status, pageable);
         return ResponseEntity.ok(articles);
     }
 

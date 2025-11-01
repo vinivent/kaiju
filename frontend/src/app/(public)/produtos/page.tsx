@@ -23,6 +23,7 @@ import {
     Loader2
 } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 import { Product, ProductSearchParams } from '@/features/products/model';
 import { productService } from '@/features/products/services';
 import { ProductCategory, ProductStatus } from '@/app/types/common';
@@ -203,26 +204,30 @@ export default function ProductsPage() {
                                             >
                                                 <Heart className="h-4 w-4" />
                                             </Button>
-                                            <div className="aspect-square overflow-hidden bg-muted">
-                                                {product.images && product.images.length > 0 ? (
-                                                    <img
-                                                        src={product.images[0]}
-                                                        alt={product.name}
-                                                        className="w-full h-full object-cover"
-                                                    />
-                                                ) : (
-                                                    <div className="w-full h-full flex items-center justify-center">
-                                                        <Package className="h-16 w-16 text-muted-foreground" />
-                                                    </div>
-                                                )}
-                                            </div>
+                                            <Link href={`/produtos/${product.productId}`}>
+                                                <div className="aspect-square overflow-hidden bg-muted cursor-pointer">
+                                                    {product.images && product.images.length > 0 ? (
+                                                        <img
+                                                            src={product.images[0]}
+                                                            alt={product.name}
+                                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                                        />
+                                                    ) : (
+                                                        <div className="w-full h-full flex items-center justify-center">
+                                                            <Package className="h-16 w-16 text-muted-foreground" />
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </Link>
                                         </CardHeader>
 
                                         <CardContent className="p-4 space-y-2">
                                             <div className="flex items-start justify-between gap-2">
-                                                <h3 className="font-semibold line-clamp-2 flex-1">
-                                                    {product.name}
-                                                </h3>
+                                                <Link href={`/produtos/${product.productId}`}>
+                                                    <h3 className="font-semibold line-clamp-2 flex-1 hover:text-primary transition-colors cursor-pointer">
+                                                        {product.name}
+                                                    </h3>
+                                                </Link>
                                             </div>
 
                                             <div className="flex items-center gap-1">

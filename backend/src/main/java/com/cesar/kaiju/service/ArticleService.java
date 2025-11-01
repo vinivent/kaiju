@@ -101,8 +101,37 @@ public class ArticleService {
     }
 
     @Transactional(readOnly = true)
-    public Page<ArticleResponseDTO> searchArticles(String keyword, Pageable pageable) {
-        Page<Article> articles = articleRepository.searchArticles(keyword, ArticleStatus.PUBLISHED, pageable);
+    public Page<ArticleResponseDTO> searchArticles(
+            String query,
+            ArticleCategory category,
+            UUID authorId,
+            ArticleStatus status,
+            Pageable pageable) {
+        Page<Article> articles;
+        
+        // Use provided status or default to PUBLISHED
+        ArticleStatus searchStatus = status != null ? status : ArticleStatus.PUBLISHED;
+        
+        // If query is provided, use search; otherwise use getAllArticles
+        if (query != null && !query.trim().isEmpty()) {
+            articles = articleRepository.searchArticles(query.trim(), searchStatus, pageable);
+        } else {
+            // Fall back to getAllArticles with filters
+            if (category != null && status != null) {
+                articles = articleRepository.findByCategoryAndStatus(category, status, pageable);
+            } else if (category != null) {
+                // Filter by category, default to PUBLISHED status if not specified
+                articles = articleRepository.findByCategoryAndStatus(category, searchStatus, pageable);
+            } else if (authorId != null) {
+                User author = userRepository.findById(authorId)
+                        .orElseThrow(() -> new EntityNotFoundException("Author not found with id: " + authorId));
+                articles = articleRepository.findByAuthor(author, pageable);
+            } else {
+                // Default to published articles
+                articles = articleRepository.findByStatus(searchStatus, pageable);
+            }
+        }
+        
         return articles.map(this::toResponseDTO);
     }
 
