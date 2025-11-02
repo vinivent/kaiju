@@ -23,11 +23,13 @@ import {
 import { Product, ProductReview } from '@/features/products/model';
 import { productService } from '@/features/products/services';
 import { ProductCategory } from '@/app/types/common';
+import { useCart } from '@/contexts/CartContext';
 
 export default function ProductDetailPage() {
     const params = useParams();
     const router = useRouter();
     const productId = params?.id as string;
+    const { addItem } = useCart();
 
     const [product, setProduct] = useState<Product | null>(null);
     const [reviews, setReviews] = useState<ProductReview[]>([]);
@@ -66,8 +68,9 @@ export default function ProductDetailPage() {
     };
 
     const handleAddToCart = () => {
-        // TODO: Implementar adicionar ao carrinho
-        alert(`Adicionado ${quantity} unidade(s) ao carrinho!`);
+        if (product) {
+            addItem(product, quantity);
+        }
     };
 
     const categoryLabels: Record<ProductCategory, string> = {

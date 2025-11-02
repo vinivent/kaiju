@@ -104,25 +104,34 @@ export default function VeterinariansPage() {
                 searchPlaceholder="Buscar veterinários..."
                 searchValue={searchQuery}
                 onSearchChange={setSearchQuery}
+                onClearFilters={handleClearFilters}
+                hasActiveFilters={
+                    searchQuery !== '' ||
+                    selectedSpecialty !== 'ALL' ||
+                    selectedCity !== '' ||
+                    selectedState !== '' ||
+                    onlineConsultation !== undefined
+                }
             >
                 <FilterSelect
                     value={selectedSpecialty}
                     onValueChange={(value) => setSelectedSpecialty(value as ReptileSpecialty | 'ALL')}
                     options={specialties}
                     icon={Filter}
-                    width="w-full md:w-[180px]"
+                    placeholder="Especialidade"
+                    width="w-full sm:w-[200px]"
                 />
                 <FilterInput
                     placeholder="Cidade"
                     value={selectedCity}
                     onChange={setSelectedCity}
-                    width="w-full md:w-[140px]"
+                    width="w-full sm:w-[160px]"
                 />
                 <FilterInput
                     placeholder="Estado (UF)"
                     value={selectedState}
                     onChange={(value) => setSelectedState(value.toUpperCase())}
-                    width="w-full md:w-[120px]"
+                    width="w-full sm:w-[120px]"
                     maxLength={2}
                 />
                 <FilterSelect
@@ -137,14 +146,16 @@ export default function VeterinariansPage() {
                         { value: 'no', label: 'Apenas Presencial' },
                     ]}
                     icon={Video}
-                    width="w-full md:w-[170px]"
+                    placeholder="Tipo de consulta"
+                    width="w-full sm:w-[180px]"
                 />
                 <FilterSelect
                     value={sortBy}
                     onValueChange={setSortBy}
                     options={sortOptions}
                     icon={ArrowUpDown}
-                    width="w-full md:w-[180px]"
+                    placeholder="Ordenar por"
+                    width="w-full sm:w-[180px]"
                 />
             </FilterBar>
 

@@ -9,10 +9,10 @@ interface EmptyStateProps {
     clearFiltersLabel?: string;
 }
 
-export function EmptyState({ 
-    icon: Icon, 
-    title, 
-    description, 
+export function EmptyState({
+    icon: Icon,
+    title,
+    description,
     onClearFilters,
     clearFiltersLabel = "Limpar Filtros"
 }: EmptyStateProps) {
@@ -24,7 +24,7 @@ export function EmptyState({
             <h3 className="text-2xl font-semibold mb-2">{title}</h3>
             <p className="text-muted-foreground mb-6">{description}</p>
             {onClearFilters && (
-                <Button variant="outline" onClick={onClearFilters}>
+                <Button variant="outline" className='cursor-pointer hover:bg-accent hover:text-accent-foreground' onClick={onClearFilters}>
                     {clearFiltersLabel}
                 </Button>
             )}

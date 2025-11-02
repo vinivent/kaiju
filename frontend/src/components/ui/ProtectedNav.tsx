@@ -10,6 +10,7 @@ import { useTheme } from "next-themes";
 import { Badge } from "@/components/ui/badge";
 import { CartModal } from "./CartModal";
 import { useUser } from "@/contexts/UserContext";
+import { useCart } from "@/contexts/CartContext";
 
 const ProtectedNav = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -17,6 +18,7 @@ const ProtectedNav = () => {
     const [mounted, setMounted] = useState(false);
     const { theme } = useTheme();
     const { user } = useUser();
+    const { items, getItemCount, updateQuantity, removeItem } = useCart();
 
     useEffect(() => setMounted(true), []);
 
@@ -29,13 +31,13 @@ const ProtectedNav = () => {
         { name: "Artigos", path: "/artigos" },
     ];
 
-    // Mock de itens no carrinho (substitua pelo estado global futuramente)
-    const [cartItems] = useState([
-        { id: "1", name: "Ração para Répteis", price: 59.9, quantity: 1, image: "/assets/sample1.jpg" },
-        { id: "2", name: "Lâmpada UVB 100W", price: 129.9, quantity: 2, image: "/assets/sample2.jpg" },
-    ]);
+    const itemCount = getItemCount();
 
-    const itemCount = cartItems.reduce((sum, i) => sum + i.quantity, 0);
+    const handleCheckout = () => {
+        // Implementar navegação para checkout futuramente
+        alert("Redirecionando para checkout...");
+        setIsCartOpen(false);
+    };
 
     return (
         <nav className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-lg">
@@ -90,9 +92,11 @@ const ProtectedNav = () => {
                             {isCartOpen && (
                                 <div className="absolute right-0 top-10">
                                     <CartModal
-                                        items={cartItems}
+                                        items={items}
                                         onClose={() => setIsCartOpen(false)}
-                                        onCheckout={() => alert("Indo para checkout...")}
+                                        onCheckout={handleCheckout}
+                                        onUpdateQuantity={updateQuantity}
+                                        onRemoveItem={removeItem}
                                     />
                                 </div>
                             )}
@@ -133,9 +137,11 @@ const ProtectedNav = () => {
                             {isCartOpen && (
                                 <div className="absolute right-0 top-10">
                                     <CartModal
-                                        items={cartItems}
+                                        items={items}
                                         onClose={() => setIsCartOpen(false)}
-                                        onCheckout={() => alert("Indo para checkout...")}
+                                        onCheckout={handleCheckout}
+                                        onUpdateQuantity={updateQuantity}
+                                        onRemoveItem={removeItem}
                                     />
                                 </div>
                             )}

@@ -104,25 +104,35 @@ export default function LocationsPage() {
                 searchPlaceholder="Buscar locais..."
                 searchValue={searchQuery}
                 onSearchChange={setSearchQuery}
+                onClearFilters={handleClearFilters}
+                hasActiveFilters={
+                    searchQuery !== '' ||
+                    selectedType !== 'ALL' ||
+                    selectedCity !== '' ||
+                    selectedState !== '' ||
+                    emergencyOnly !== undefined ||
+                    hours24 !== undefined
+                }
             >
                 <FilterSelect
                     value={selectedType}
                     onValueChange={(value) => setSelectedType(value as LocationType | 'ALL')}
                     options={locationTypes}
                     icon={Filter}
-                    width="w-full md:w-[190px]"
+                    placeholder="Tipo de local"
+                    width="w-full sm:w-[200px]"
                 />
                 <FilterInput
                     placeholder="Cidade"
                     value={selectedCity}
                     onChange={setSelectedCity}
-                    width="w-full md:w-[140px]"
+                    width="w-full sm:w-[160px]"
                 />
                 <FilterInput
                     placeholder="Estado (UF)"
                     value={selectedState}
                     onChange={(value) => setSelectedState(value.toUpperCase())}
-                    width="w-full md:w-[120px]"
+                    width="w-full sm:w-[120px]"
                     maxLength={2}
                 />
                 <FilterSelect
@@ -137,7 +147,8 @@ export default function LocationsPage() {
                         { value: 'no', label: 'Sem Filtro' },
                     ]}
                     icon={AlertCircle}
-                    width="w-full md:w-[170px]"
+                    placeholder="Serviço de emergência"
+                    width="w-full sm:w-[180px]"
                 />
                 <FilterSelect
                     value={hours24 === undefined ? 'all' : hours24 ? 'yes' : 'no'}
@@ -151,14 +162,16 @@ export default function LocationsPage() {
                         { value: 'no', label: 'Horário Normal' },
                     ]}
                     icon={Clock}
-                    width="w-full md:w-[150px]"
+                    placeholder="Funcionamento"
+                    width="w-full sm:w-[160px]"
                 />
                 <FilterSelect
                     value={sortBy}
                     onValueChange={setSortBy}
                     options={sortOptions}
                     icon={ArrowUpDown}
-                    width="w-full md:w-[180px]"
+                    placeholder="Ordenar por"
+                    width="w-full sm:w-[180px]"
                 />
             </FilterBar>
 

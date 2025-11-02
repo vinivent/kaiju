@@ -5,15 +5,20 @@ import { Star, Heart, Package, ShoppingCart } from 'lucide-react';
 import Link from 'next/link';
 import { Product } from '@/features/products/model';
 import { ProductCategory } from '@/app/types/common';
+import { useCart } from '@/contexts/CartContext';
 
 interface ProductCardProps {
     product: Product;
     categoryLabels: Record<ProductCategory, string>;
-    onAddToCart?: (product: Product) => void;
 }
 
-export function ProductCard({ product, categoryLabels, onAddToCart }: ProductCardProps) {
+export function ProductCard({ product, categoryLabels }: ProductCardProps) {
     const categoryLabel = categoryLabels[product.category] || product.category;
+    const { addItem } = useCart();
+
+    const handleAddToCart = () => {
+        addItem(product, 1);
+    };
 
     return (
         <Card className="group hover:shadow-2xl transition-all duration-300 overflow-hidden border-border/50 hover:border-primary/20">
@@ -95,7 +100,7 @@ export function ProductCard({ product, categoryLabels, onAddToCart }: ProductCar
                 <Button
                     className="flex-1 cursor-pointer h-10 font-medium"
                     disabled={product.stockQuantity === 0}
-                    onClick={() => onAddToCart?.(product)}
+                    onClick={handleAddToCart}
                 >
                     <ShoppingCart className="h-4 w-4 mr-2" />
                     Adicionar

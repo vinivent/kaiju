@@ -114,19 +114,23 @@ export default function ProductsPage() {
                 searchPlaceholder="Buscar produtos..."
                 searchValue={searchQuery}
                 onSearchChange={setSearchQuery}
+                onClearFilters={handleClearFilters}
+                hasActiveFilters={searchQuery !== '' || selectedCategory !== 'ALL'}
             >
                 <FilterSelect
                     value={selectedCategory}
                     onValueChange={(value) => setSelectedCategory(value as ProductCategory | 'ALL')}
                     options={categories}
-                    width="w-full md:w-[200px]"
+                    placeholder="Categoria"
+                    width="w-full sm:w-[200px]"
                 />
                 <FilterSelect
                     value={sortBy}
                     onValueChange={setSortBy}
                     options={sortOptions}
                     icon={ArrowUpDown}
-                    width="w-full md:w-[180px]"
+                    placeholder="Ordenar por"
+                    width="w-full sm:w-[200px]"
                 />
             </FilterBar>
 
