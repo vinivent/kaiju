@@ -47,12 +47,10 @@ export default function ProductDetailPage() {
         setLoading(true);
         setError(null);
         try {
-            // Product ID is a UUID string
             const id = productId as string;
             const productData = await productService.getProductById(id);
             setProduct(productData);
 
-            // Load reviews
             try {
                 const reviewsData = await productService.getProductReviews(id, 0, 10);
                 setReviews(reviewsData.content || []);
