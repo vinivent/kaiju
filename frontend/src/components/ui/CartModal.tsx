@@ -62,7 +62,7 @@ export function CartModal({
                 "animate-in slide-in-from-top-2 duration-300",
                 "flex flex-col"
             )}>
-                <CardHeader className="pb-4 flex-shrink-0">
+                <CardHeader className="">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                             <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
@@ -105,11 +105,14 @@ export function CartModal({
                     ) : (
                         <>
                             <ScrollArea className="flex-1 md:h-[300px]">
-                                <div className="p-3 md:p-4 space-y-2 md:space-y-3">
-                                    {items.map((item) => (
+                                <div className="pb-3 md:pb-4">
+                                    {items.map((item, index) => (
                                         <div
                                             key={item.id}
-                                            className="group flex gap-2 md:gap-3 p-2 md:p-3 rounded-lg hover:bg-muted/50 transition-colors"
+                                            className={cn(
+                                                "group flex gap-2 md:gap-3 rounded-lg hover:bg-muted/50 transition-colors px-3 md:px-4 py-2 md:py-2.5",
+                                                index > 0 && "mt-2 md:mt-3"
+                                            )}
                                         >
                                             <div className="relative h-16 w-16 md:h-20 md:w-20 rounded-lg overflow-hidden bg-muted flex-shrink-0">
                                                 <img
@@ -131,7 +134,7 @@ export function CartModal({
                                                         <Button
                                                             variant="ghost"
                                                             size="icon"
-                                                            className="h-7 w-7 md:h-6 md:w-6 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity flex-shrink-0"
+                                                            className="cursor-pointer h-7 w-7 md:h-6 md:w-6 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity flex-shrink-0"
                                                             onClick={() => onRemoveItem(item.productId || item.id)}
                                                         >
                                                             <Trash2 className="h-3.5 w-3.5 md:h-3 md:w-3 text-destructive" />
@@ -196,8 +199,6 @@ export function CartModal({
                                         </p>
                                     )}
                                 </div>
-
-                                <Separator />
 
                                 <div className="flex justify-between items-center">
                                     <span className="font-semibold text-sm md:text-base">Total</span>
