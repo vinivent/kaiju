@@ -5,5 +5,6 @@ public record UserUpdateRequestDTO(
         String name,
         String description,
         String avatar,
+        String header,
         String password
 ) {}

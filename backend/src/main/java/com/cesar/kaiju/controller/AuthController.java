@@ -1,6 +1,7 @@
 package com.cesar.kaiju.controller;
 
 import com.cesar.kaiju.dto.LoginRequestDTO;
+import com.cesar.kaiju.dto.LoginResponseDTO;
 import com.cesar.kaiju.dto.ResetPasswordRequestDTO;
 import com.cesar.kaiju.dto.UserRegisterRequestDTO;
 import com.cesar.kaiju.service.UserService;
@@ -28,7 +29,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginRequestDTO request) {
+    public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginRequestDTO request) {
         Authentication authentication = new UsernamePasswordAuthenticationToken(
                 request.username(), request.password());
         authenticationManager.authenticate(authentication);
@@ -38,11 +39,14 @@ public class AuthController {
                 .httpOnly(true)
                 .secure(false)
                 .sameSite("Lax")
+                .path("/")
                 .maxAge(7 * 24 * 60 * 60)
                 .build();
 
-
-        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString()).body("Login realizado com sucesso.");
+        LoginResponseDTO response = new LoginResponseDTO(token, "Login realizado com sucesso.");
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .body(response);
     }
 
     @PostMapping("/logout")
@@ -51,6 +55,7 @@ public class AuthController {
                 .httpOnly(true)
                 .secure(false)
                 .sameSite("Lax")
+                .path("/")
                 .maxAge(0)
                 .build();
 
@@ -84,8 +89,13 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody UserRegisterRequestDTO request) {
-        userService.createUser(request);
-        return ResponseEntity.ok("Usuário registrado com sucesso. Verifique seu e-mail.");
+        try {
+            userService.createUser(request);
+            return ResponseEntity.ok("Usuário registrado com sucesso. Verifique seu e-mail.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Erro ao verificar usuário.");
+        }
     }
 
     @GetMapping("/verify/{uuid}")

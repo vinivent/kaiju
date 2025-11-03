@@ -7,6 +7,7 @@ import com.cesar.kaiju.model.Veterinarian;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -40,4 +41,8 @@ public interface ChatConversationRepository extends JpaRepository<ChatConversati
     
     @Query("SELECT COUNT(c) FROM ChatConversation c WHERE c.veterinarian = :vet AND c.vetUnreadCount = true")
     Long countUnreadByVeterinarian(@Param("vet") Veterinarian veterinarian);
+    
+    @Modifying
+    @Query("DELETE FROM ChatConversation c WHERE c.user = :user")
+    void deleteByUser(@Param("user") User user);
 }

@@ -22,8 +22,6 @@ const ProtectedNav = () => {
 
     useEffect(() => setMounted(true), []);
 
-    useEffect(() => console.log(user), []);
-
     const navLinks = [
         { name: "Produtos", path: "/produtos?category=ALL" },
         { name: "Veterinários", path: "/veterinarios" },
@@ -103,11 +101,13 @@ const ProtectedNav = () => {
                         </div>
 
                         {/* Usuário */}
-                        <Link href="/login">
-                            <Button variant="ghost" className="cursor-pointer" size="icon">
-                                <User className="h-5 w-5" />
-                            </Button>
-                        </Link>
+                        {user && (
+                            <Link href={`/profile/${user.id}`}>
+                                <Button variant="ghost" className="cursor-pointer" size="icon">
+                                    <User className="h-5 w-5" />
+                                </Button>
+                            </Link>
+                        )}
 
                         <Link href="/register">
                             {user !== null ? "" : <Button className="rounded-full cursor-pointer">Criar Conta</Button>}
@@ -168,13 +168,15 @@ const ProtectedNav = () => {
                                     {link.name}
                                 </Link>
                             ))}
-                            <div className="flex flex-col space-y-2 pt-4 border-t border-border">
-                                <Link href="/profile" onClick={() => setIsOpen(false)}>
-                                    <Button variant="outline" className="w-full cursor-pointer">
-                                        Meu Perfil
-                                    </Button>
-                                </Link>
-                            </div>
+                            {user && (
+                                <div className="flex flex-col space-y-2 pt-4 border-t border-border">
+                                    <Link href={`/profile/${user.id}`} onClick={() => setIsOpen(false)}>
+                                        <Button variant="outline" className="w-full cursor-pointer">
+                                            Meu Perfil
+                                        </Button>
+                                    </Link>
+                                </div>
+                            )}
                         </div>
                     </div>
                 )}

@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { UserProvider, useUser } from '@/contexts/UserContext';
 import ProtectedNav from '@/components/ui/ProtectedNav';
-
+import Loader from '@/components/ui/Loader';
 function ProtectedLayoutContent({ children }: { children: React.ReactNode }) {
     const { user, loading } = useUser();
     const router = useRouter();
@@ -17,9 +17,7 @@ function ProtectedLayoutContent({ children }: { children: React.ReactNode }) {
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center min-h-screen">
-                <div>Carregando...</div>
-            </div>
+            <Loader />
         );
     }
 

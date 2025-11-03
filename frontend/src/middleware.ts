@@ -3,7 +3,7 @@ import apiClient from "./lib/http/api";
 
 const HOME = "/home";
 
-const OPEN = ["/", "/contato", "/forgot-password", "/reset-password", "/produtos", "/artigos", "/veterinarios", "/locais"];
+const OPEN = ["/", "/contato", "/forgot-password", "/reset-password", "/produtos", "/artigos", "/veterinarios", "/locais", "/profile"];
 const ONLY_GUEST = ["/login", "/register"];
 
 // prefixes e extensões de assets/imagens que devem ser liberados

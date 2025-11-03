@@ -1,11 +1,11 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { User } from '@/app/types/common';
-import { authService } from '@/features/auth/service';
+import { userService } from '@/features/user/service';
+import { UserResponse } from '@/features/user/model';
 
 interface UserContextType {
-    user: User | null;
+    user: UserResponse | null;
     loading: boolean;
     error: string | null;
     refreshUser: () => Promise<void>;
@@ -15,7 +15,7 @@ interface UserContextType {
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const [user, setUser] = useState<User | null>(null);
+    const [user, setUser] = useState<UserResponse | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -23,7 +23,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setLoading(true);
         setError(null);
         try {
-            const userData = await authService.getUser();
+            const userData = await userService.getCurrentUser();
             setUser(userData);
         } catch (err: any) {
             setError(err.message);

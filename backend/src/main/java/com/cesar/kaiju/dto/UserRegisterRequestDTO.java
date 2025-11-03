@@ -1,5 +1,6 @@
 package com.cesar.kaiju.dto;
 
+import com.cesar.kaiju.enums.UserRole;
 import jakarta.validation.constraints.Size;
 
 public record UserRegisterRequestDTO(
@@ -7,5 +8,6 @@ public record UserRegisterRequestDTO(
         String email,
         @Size(min = 6, message = "A senha deve ter pelo menos 6 caracteres.")
         String password,
-        String name
+        String name,
+        UserRole userRole
 ) {}

@@ -34,4 +34,8 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, UUID> 
     
     @Query("SELECT m FROM ChatMessage m WHERE m.conversation = :conversation ORDER BY m.sentAt ASC")
     List<ChatMessage> findAllByConversationOrdered(@Param("conversation") ChatConversation conversation);
+    
+    @Modifying
+    @Query("DELETE FROM ChatMessage m WHERE m.sender = :sender")
+    void deleteBySender(@Param("sender") User sender);
 }

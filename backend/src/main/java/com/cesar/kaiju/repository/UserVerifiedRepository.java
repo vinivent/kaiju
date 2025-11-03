@@ -12,4 +12,6 @@ import java.util.UUID;
 public interface UserVerifiedRepository extends JpaRepository<UserVerified, UUID> {
     Optional<UserVerified> findByUser(User user);
     Optional<UserVerified> findByVerificationToken(String token);
+    
+    void deleteByUser(User user);
 }

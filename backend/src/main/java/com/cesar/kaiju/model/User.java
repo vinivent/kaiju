@@ -43,6 +43,8 @@ public class User implements UserDetails {
 
     private String avatar;
 
+    private String header;
+
     private String description;
 
     @Enumerated(EnumType.STRING)
@@ -79,5 +81,10 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return this.situation == UserSituation.VERIFIED;
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = new Date();
     }
 }

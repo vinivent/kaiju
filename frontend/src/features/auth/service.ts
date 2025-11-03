@@ -1,5 +1,5 @@
 import api from "@/lib/http/api";
-import { ApiResponse, User } from "@/app/types/common";
+import { ApiResponse } from "@/app/types/common";
 import { RegisterRequest, LoginRequest, ResetPasswordRequest } from "./model";
 
 export const authService = {
@@ -12,9 +12,9 @@ export const authService = {
     }
   },
 
-  async login(request: LoginRequest): Promise<ApiResponse<string>> {
+  async login(request: LoginRequest): Promise<ApiResponse<{ token: string; message: string }>> {
     try {
-      const response = await api.post("/auth/login", request);
+      const response = await api.post<{ token: string; message: string }>("/auth/login", request);
       return { data: response.data };
     } catch (error: any) {
       throw new Error("Erro ao fazer login: " + error.response?.data || error.message);
@@ -74,13 +74,4 @@ export const authService = {
       throw new Error("Erro ao validar token : " + error.response?.data || error.message)
     }
   },
-
-  async getUser(): Promise<User> {
-    try {
-      const response = await api.get(`/user/me`);
-      return response.data;
-    } catch (error: any) {
-      throw new Error("Erro ao buscar usuário atual: " + error.response?.data || error.message)
-    }
-  }
 };

@@ -7,6 +7,7 @@ import com.cesar.kaiju.model.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -51,4 +52,8 @@ public interface ArticleRepository extends JpaRepository<Article, UUID> {
     @Query("SELECT a FROM Article a WHERE a.status = 'PUBLISHED' AND a.category = :category " +
            "ORDER BY a.viewCount DESC")
     List<Article> findPopularByCategory(@Param("category") ArticleCategory category, Pageable pageable);
+    
+    @Modifying
+    @Query("DELETE FROM Article a WHERE a.author = :author")
+    void deleteByAuthor(@Param("author") User author);
 }

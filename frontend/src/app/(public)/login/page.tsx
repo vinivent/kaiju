@@ -66,8 +66,9 @@ const Login = () => {
     setIsLoading(true);
 
     try {
-      const message = authService.login({ username: username, password });
-      toast.success((await message).data);
+      const response = await authService.login({ username: username, password });
+      toast.success(response.data?.message || 'Login realizado com sucesso');
+      await new Promise(resolve => setTimeout(resolve, 100));
       router.push("/home");
     } catch (error: any) {
       console.error(error);
@@ -168,11 +169,11 @@ const Login = () => {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="animate-element cursor-pointer animate-delay-600 w-full rounded-2xl bg-primary py-4 font-medium text-[#fff8e1] hover:bg-primary/90 transition-colors"
+                className="animate-element cursor-pointer animate-delay-600 w-full rounded-2xl bg-primary py-4 font-medium text-[#fff8e1] hover:bg-primary/90 transition-colors min-h-[56px] flex items-center justify-center"
               >
                 {isLoading ? (
                   <span className="inline-flex items-center gap-2">
-                    <LoaderCircle className="animate-spin" />
+                    <LoaderCircle className="animate-spin h-5 w-5" />
                     Entrando...
                   </span>
                 ) : (

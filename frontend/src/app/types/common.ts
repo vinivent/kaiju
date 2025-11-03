@@ -104,14 +104,3 @@ export enum UserSituation {
   PENDING = 'PENDING',
   BLOCKED = 'BLOCKED'
 }
-
-export interface User {
-  id: UUID,
-  username: string,
-  email: string,
-  name: string,
-  avatar: string,
-  UserSituation: UserSituation,
-  createdAt: Date
-}
-

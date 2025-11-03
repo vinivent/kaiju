@@ -229,7 +229,7 @@ const Register = () => {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="animate-element cursor-pointer animate-delay-550 w-full rounded-2xl bg-primary py-4 font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
+                className="animate-element cursor-pointer animate-delay-550 w-full rounded-2xl bg-primary py-4 font-medium text-primary-foreground hover:bg-primary/90 transition-colors min-h-[56px] flex items-center justify-center"
               >
                 {isLoading ? (
                   <span className="inline-flex items-center gap-2">
