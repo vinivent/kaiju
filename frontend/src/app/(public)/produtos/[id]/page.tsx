@@ -59,9 +59,10 @@ export default function ProductDetailPage() {
             } catch (err) {
                 console.error('Erro ao carregar avaliações:', err);
             }
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error('Erro ao carregar produto:', err);
-            setError(err.message || 'Produto não encontrado');
+            const message = err instanceof Error ? err.message : 'Produto não encontrado';
+            setError(message);
         } finally {
             setLoading(false);
         }
