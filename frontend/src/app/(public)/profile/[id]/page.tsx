@@ -29,8 +29,9 @@ export default function ProfilePage() {
             try {
                 const userData = await userService.getUserById(userId);
                 setUser(userData);
-            } catch (error: any) {
-                toast.error('Erro ao carregar perfil: ' + (error.message || 'Erro desconhecido'));
+            } catch (error: unknown) {
+                const message = error instanceof Error ? error.message : 'Erro desconhecido';
+                toast.error('Erro ao carregar perfil: ' + message);
             } finally {
                 setLoading(false);
             }
@@ -70,8 +71,9 @@ export default function ProfilePage() {
             const updatedUser = await userService.getUserById(user.id);
             setUser(updatedUser);
             await refreshUser();
-        } catch (error: any) {
-            toast.error('Erro ao atualizar perfil: ' + (error.message || 'Erro desconhecido'));
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : 'Erro desconhecido';
+            toast.error('Erro ao atualizar perfil: ' + message);
         } finally {
             setUpdating(false);
         }
@@ -86,8 +88,9 @@ export default function ProfilePage() {
             toast.success('Conta excluída com sucesso');
             // Redirect to login after deletion
             window.location.href = '/login';
-        } catch (error: any) {
-            toast.error('Erro ao excluir conta: ' + (error.message || 'Erro desconhecido'));
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : 'Erro desconhecido';
+            toast.error('Erro ao excluir conta: ' + message);
             setDeleting(false);
         }
     };

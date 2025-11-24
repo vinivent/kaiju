@@ -25,8 +25,9 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
         try {
             const userData = await userService.getCurrentUser();
             setUser(userData);
-        } catch (err: any) {
-            setError(err.message);
+        } catch (err: unknown) {
+            const message = err instanceof Error ? err.message : 'Erro ao carregar usuário';
+            setError(message);
             setUser(null);
         } finally {
             setLoading(false);
