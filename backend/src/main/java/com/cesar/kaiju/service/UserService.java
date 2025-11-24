@@ -240,6 +240,22 @@ public class UserService implements UserDetailsService {
         return userVerifiedRepository.save(verification);
     }
 
+    @Transactional
+    public void becomeVeterinarian(UUID userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado."));
+        user.setRole(UserRole.VETERINARIAN);
+        userRepository.save(user);
+    }
+
+    @Transactional
+    public void becomeSeller(UUID userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado."));
+        user.setRole(UserRole.SELLER);
+        userRepository.save(user);
+    }
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepository.findByUsername(username)

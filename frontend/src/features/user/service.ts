@@ -35,5 +35,21 @@ export const userService = {
         const response = await api.delete<string>(`${BASE_PATH}/${id}`);
         return response.data;
     },
+
+    /**
+     * Become a veterinarian (change role to VETERINARIAN)
+     */
+    async becomeVeterinarian(): Promise<string> {
+        const response = await api.post<string>(`${BASE_PATH}/become-veterinarian`);
+        return response.data;
+    },
+
+    /**
+     * Become a seller (change role to SELLER)
+     */
+    async becomeSeller(): Promise<string> {
+        const response = await api.post<string>(`${BASE_PATH}/become-seller`);
+        return response.data;
+    },
 };
 

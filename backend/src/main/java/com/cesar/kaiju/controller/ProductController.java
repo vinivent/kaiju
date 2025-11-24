@@ -2,8 +2,6 @@ package com.cesar.kaiju.controller;
 
 import com.cesar.kaiju.dto.ProductRequestDTO;
 import com.cesar.kaiju.dto.ProductResponseDTO;
-import com.cesar.kaiju.dto.ProductReviewRequestDTO;
-import com.cesar.kaiju.dto.ProductReviewResponseDTO;
 import com.cesar.kaiju.enums.ProductCategory;
 import com.cesar.kaiju.enums.ProductStatus;
 import com.cesar.kaiju.service.ProductService;
@@ -14,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -56,72 +53,4 @@ public class ProductController {
         return ResponseEntity.ok(products);
     }
 
-    @GetMapping("/top-rated")
-    public ResponseEntity<List<ProductResponseDTO>> getTopRated(
-            @RequestParam(required = false) ProductCategory category,
-            @RequestParam(defaultValue = "10") int limit) {
-        List<ProductResponseDTO> products = productService.getTopRatedProducts(category, limit);
-        return ResponseEntity.ok(products);
-    }
-
-    @GetMapping("/latest")
-    public ResponseEntity<List<ProductResponseDTO>> getLatest(
-            @RequestParam(defaultValue = "10") int limit) {
-        List<ProductResponseDTO> products = productService.getLatestProducts(limit);
-        return ResponseEntity.ok(products);
-    }
-
-    @GetMapping("/seller/{sellerId}")
-    public ResponseEntity<Page<ProductResponseDTO>> getProductsBySeller(
-            @PathVariable UUID sellerId,
-            Pageable pageable) {
-        Page<ProductResponseDTO> products = productService.getProductsBySeller(sellerId, pageable);
-        return ResponseEntity.ok(products);
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<ProductResponseDTO> updateProduct(
-            @PathVariable UUID id,
-            @Valid @RequestBody ProductRequestDTO request) {
-        ProductResponseDTO product = productService.updateProduct(id, request);
-        return ResponseEntity.ok(product);
-    }
-
-    @PatchMapping("/{id}/status")
-    public ResponseEntity<Void> updateProductStatus(
-            @PathVariable UUID id,
-            @RequestParam ProductStatus status) {
-        productService.updateProductStatus(id, status);
-        return ResponseEntity.ok().build();
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProduct(@PathVariable UUID id) {
-        productService.deleteProduct(id);
-        return ResponseEntity.noContent().build();
-    }
-
-    @GetMapping("/{id}/reviews")
-    public ResponseEntity<Page<ProductReviewResponseDTO>> getProductReviews(
-            @PathVariable UUID id,
-            Pageable pageable) {
-        Page<ProductReviewResponseDTO> reviews = productService.getProductReviews(id, pageable);
-        return ResponseEntity.ok(reviews);
-    }
-
-    @PostMapping("/{id}/reviews")
-    public ResponseEntity<ProductReviewResponseDTO> createProductReview(
-            @PathVariable UUID id,
-            @Valid @RequestBody ProductReviewRequestDTO request) {
-        ProductReviewResponseDTO review = productService.createProductReview(id, request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(review);
-    }
-
-    @PostMapping("/{id}/reviews/{reviewId}/helpful")
-    public ResponseEntity<Void> markReviewHelpful(
-            @PathVariable UUID id,
-            @PathVariable Long reviewId) {
-        productService.markReviewHelpful(id, reviewId);
-        return ResponseEntity.ok().build();
-    }
 }

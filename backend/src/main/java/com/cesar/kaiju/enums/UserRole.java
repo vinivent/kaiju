@@ -4,6 +4,5 @@ public enum UserRole {
     USER,               // Regular platform user
     VETERINARIAN,       // Verified veterinarian professional
     SELLER,             // Product seller/vendor
-    AUTHOR,             // Article author/content creator
     ADMIN               // Platform administrator
 }

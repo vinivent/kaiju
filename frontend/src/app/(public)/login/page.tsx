@@ -99,14 +99,14 @@ const Login = () => {
             <form className="space-y-5" onSubmit={handleLogin}>
               <div className="animate-element animate-delay-300">
                 <label className="text-sm font-medium text-muted-foreground">
-                  Email
+                  Nome de Usuário
                 </label>
                 <GlassInputWrapper>
                   <input
                     name="username"
                     type="text"
                     onChange={(e) => setUsername(e.target.value)}
-                    placeholder="Digite seu email"
+                    placeholder="Digite seu nome de usuário"
                     className="w-full bg-transparent text-sm p-4 rounded-2xl focus:outline-none"
                     required
                   />

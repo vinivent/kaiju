@@ -1,6 +1,5 @@
 package com.cesar.kaiju.controller;
 
-import com.cesar.kaiju.dto.ArticleRequestDTO;
 import com.cesar.kaiju.dto.ArticleResponseDTO;
 import com.cesar.kaiju.enums.ArticleCategory;
 import com.cesar.kaiju.enums.ArticleStatus;
@@ -12,7 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -25,12 +23,6 @@ public class ArticleController {
         this.articleService = articleService;
     }
 
-    @PostMapping
-    public ResponseEntity<ArticleResponseDTO> createArticle(
-            @Valid @RequestBody ArticleRequestDTO request) {
-        ArticleResponseDTO article = articleService.createArticle(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(article);
-    }
 
     @GetMapping("/{id}")
     public ResponseEntity<ArticleResponseDTO> getArticle(@PathVariable UUID id) {
@@ -73,66 +65,4 @@ public class ArticleController {
         return ResponseEntity.ok(articles);
     }
 
-    @GetMapping("/author/{authorId}")
-    public ResponseEntity<Page<ArticleResponseDTO>> getArticlesByAuthor(
-            @PathVariable UUID authorId,
-            Pageable pageable) {
-        Page<ArticleResponseDTO> articles = articleService.getArticlesByAuthor(authorId, pageable);
-        return ResponseEntity.ok(articles);
-    }
-
-    @GetMapping("/popular")
-    public ResponseEntity<List<ArticleResponseDTO>> getMostViewed(
-            @RequestParam(defaultValue = "10") int limit) {
-        List<ArticleResponseDTO> articles = articleService.getMostViewedArticles(limit);
-        return ResponseEntity.ok(articles);
-    }
-
-    @GetMapping("/liked")
-    public ResponseEntity<List<ArticleResponseDTO>> getMostLiked(
-            @RequestParam(defaultValue = "10") int limit) {
-        List<ArticleResponseDTO> articles = articleService.getMostLikedArticles(limit);
-        return ResponseEntity.ok(articles);
-    }
-
-    @GetMapping("/latest")
-    public ResponseEntity<List<ArticleResponseDTO>> getLatest(
-            @RequestParam(defaultValue = "10") int limit) {
-        List<ArticleResponseDTO> articles = articleService.getLatestArticles(limit);
-        return ResponseEntity.ok(articles);
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<ArticleResponseDTO> updateArticle(
-            @PathVariable UUID id,
-            @Valid @RequestBody ArticleRequestDTO request) {
-        ArticleResponseDTO article = articleService.updateArticle(id, request);
-        return ResponseEntity.ok(article);
-    }
-
-    @PatchMapping("/{id}/status")
-    public ResponseEntity<Void> updateStatus(
-            @PathVariable UUID id,
-            @RequestParam ArticleStatus status) {
-        articleService.updateArticleStatus(id, status);
-        return ResponseEntity.ok().build();
-    }
-
-    @PatchMapping("/{id}/view")
-    public ResponseEntity<Void> incrementViewCount(@PathVariable UUID id) {
-        articleService.incrementViewCount(id);
-        return ResponseEntity.ok().build();
-    }
-
-    @PatchMapping("/{id}/like")
-    public ResponseEntity<Void> incrementLikeCount(@PathVariable UUID id) {
-        articleService.incrementLikeCount(id);
-        return ResponseEntity.ok().build();
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteArticle(@PathVariable UUID id) {
-        articleService.deleteArticle(id);
-        return ResponseEntity.noContent().build();
-    }
 }
