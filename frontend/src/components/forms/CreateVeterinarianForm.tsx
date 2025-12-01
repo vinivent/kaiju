@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { ReptileSpecialty } from "@/app/types/common";
-import { CreateVeterinarianRequest } from "@/features/veterinarians/models";
+import { CreateVeterinarianFormData } from "@/features/veterinarians/models";
 import { veterinarianService } from "@/features/veterinarians/services";
 import { Button } from "@/components/ui/button";
 import {
@@ -27,7 +27,7 @@ export function CreateVeterinarianForm({
 }: CreateVeterinarianFormProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formData, setFormData] = useState<CreateVeterinarianRequest>({
+  const [formData, setFormData] = useState<CreateVeterinarianFormData>({
     fullName: "",
     email: "",
     phone: "",
@@ -40,6 +40,7 @@ export function CreateVeterinarianForm({
     state: "",
     zipCode: "",
     bio: "",
+    imageUrl: "",
     consultationFee: 0,
     availableForOnlineConsultation: false,
   });
@@ -81,15 +82,42 @@ export function CreateVeterinarianForm({
         state: "",
         zipCode: "",
         bio: "",
+        imageUrl: "",
         consultationFee: 0,
         availableForOnlineConsultation: false,
       });
       onSuccess?.();
     } catch (error: any) {
       console.error("Erro ao criar perfil de veterinário:", error);
-      toast.error(
-        error?.response?.data || "Erro ao criar perfil. Tente novamente."
-      );
+
+      // Extract error message from different possible formats
+      let errorMessage = "Erro ao criar perfil. Tente novamente.";
+
+      if (error?.response?.data) {
+        if (typeof error.response.data === "string") {
+          errorMessage = error.response.data;
+        } else if (error.response.data.message) {
+          errorMessage = error.response.data.message;
+        } else if (error.response.data.error) {
+          errorMessage = error.response.data.error;
+        }
+      } else if (error?.message) {
+        errorMessage = error.message;
+      }
+
+      // Handle specific error cases
+      if (
+        errorMessage.includes("already have a veterinarian profile") ||
+        errorMessage.includes("duplicate key") ||
+        errorMessage.includes("already exists")
+      ) {
+        errorMessage =
+          "Você já possui um perfil de veterinário cadastrado. Use a opção de editar para atualizar seu perfil.";
+      } else if (errorMessage.includes("License number already registered")) {
+        errorMessage = "Este número de CRMV já está cadastrado.";
+      }
+
+      toast.error(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
@@ -125,6 +153,32 @@ export function CreateVeterinarianForm({
               }
               placeholder="Seu nome completo"
             />
+          </div>
+          <div className="grid gap-2">
+            <label htmlFor="imageUrl" className="text-sm font-medium">
+              Foto de Perfil (URL)
+            </label>
+            <Input
+              id="imageUrl"
+              type="url"
+              value={formData.imageUrl || ""}
+              onChange={(e) =>
+                setFormData({ ...formData, imageUrl: e.target.value })
+              }
+              placeholder="https://exemplo.com/foto.jpg"
+            />
+            {formData.imageUrl && (
+              <div className="mt-2">
+                <img
+                  src={formData.imageUrl}
+                  alt="Preview"
+                  className="w-32 h-32 object-cover rounded-md border border-input"
+                  onError={(e) => {
+                    e.currentTarget.style.display = "none";
+                  }}
+                />
+              </div>
+            )}
           </div>
           <div className="grid gap-2">
             <label htmlFor="email" className="text-sm font-medium">
@@ -189,10 +243,7 @@ export function CreateVeterinarianForm({
             </div>
           </div>
           <div className="grid gap-2">
-            <label
-              htmlFor="yearsOfExperience"
-              className="text-sm font-medium"
-            >
+            <label htmlFor="yearsOfExperience" className="text-sm font-medium">
               Anos de Experiência
             </label>
             <Input
@@ -329,10 +380,7 @@ export function CreateVeterinarianForm({
               }
               className="h-4 w-4 rounded border-input"
             />
-            <label
-              htmlFor="onlineConsultation"
-              className="text-sm font-medium"
-            >
+            <label htmlFor="onlineConsultation" className="text-sm font-medium">
               Oferece consultas online
             </label>
           </div>
@@ -361,4 +409,3 @@ export function CreateVeterinarianForm({
     </Dialog>
   );
 }
-

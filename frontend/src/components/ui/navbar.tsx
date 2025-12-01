@@ -23,8 +23,6 @@ const Navbar = () => {
     const navLinks = [
         { name: "Produtos", path: "/produtos?category=ALL" },
         { name: "Veterinários", path: "/veterinarios" },
-        { name: "Locais", path: "/locais" },
-        { name: "Artigos", path: "/artigos" },
     ];
 
     const itemCount = getItemCount();

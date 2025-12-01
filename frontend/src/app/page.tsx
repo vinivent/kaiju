@@ -1,12 +1,6 @@
 "use client"
 
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import Navbar from "@/components/ui/navbar";
-import Footer from "@/components/ui/footer";
-import { ArrowRight, Package, Stethoscope, MapPin, BookOpen, Star, Shield, Clock, Sparkles } from "lucide-react";
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Package, Stethoscope, MapPin, BookOpen } from "lucide-react";
 import FeaturesSection from "@/components/ui/features-section";
 import CtaSection from "@/components/ui/cta-section";
 import { HeroSection } from "@/components/ui/HeroSection";
@@ -33,12 +27,6 @@ export default function Home() {
       title: "Guias de Cuidados",
       description: "Artigos completos sobre cuidados com répteis",
     },
-  ];
-
-  const benefits = [
-    { icon: Star, text: "Produtos selecionados por especialistas" },
-    { icon: Shield, text: "Veterinários certificados" },
-    { icon: Clock, text: "Atendimento de emergência 24h" },
   ];
 
   return (

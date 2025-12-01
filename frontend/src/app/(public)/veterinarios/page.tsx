@@ -213,7 +213,7 @@ export default function VeterinariansPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {veterinarians.map((vet) => (
                   <VeterinarianCard
-                    key={vet.id}
+                    key={`vet-${vet.id}`}
                     veterinarian={vet}
                     specialtyLabels={specialtyLabels}
                   />

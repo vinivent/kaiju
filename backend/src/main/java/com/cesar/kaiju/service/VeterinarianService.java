@@ -34,6 +34,11 @@ public class VeterinarianService {
     public VeterinarianResponseDTO createVeterinarian(VeterinarianRequestDTO request) {
         User currentUser = getCurrentUser();
         
+        // Check if user already has a veterinarian profile
+        if (veterinarianRepository.findByUser(currentUser).isPresent()) {
+            throw new IllegalArgumentException("You already have a veterinarian profile. Please update your existing profile instead.");
+        }
+        
         // Check if license number already exists
         if (veterinarianRepository.findByLicenseNumber(request.licenseNumber()).isPresent()) {
             throw new IllegalArgumentException("License number already registered");

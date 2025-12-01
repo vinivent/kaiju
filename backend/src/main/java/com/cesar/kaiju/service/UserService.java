@@ -9,256 +9,234 @@ import com.cesar.kaiju.exception.UsernameAlreadyUsedExcpetion;
 import com.cesar.kaiju.model.PasswordResetToken;
 import com.cesar.kaiju.model.User;
 import com.cesar.kaiju.model.UserVerified;
-import com.cesar.kaiju.repository.ArticleRepository;
-import com.cesar.kaiju.repository.ChatConversationRepository;
-import com.cesar.kaiju.repository.ChatMessageRepository;
 import com.cesar.kaiju.repository.PasswordResetTokenRepository;
-import com.cesar.kaiju.repository.ProductRepository;
-import com.cesar.kaiju.repository.ProductReviewRepository;
 import com.cesar.kaiju.repository.UserRepository;
 import com.cesar.kaiju.repository.UserVerifiedRepository;
-import com.cesar.kaiju.repository.VeterinarianRepository;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.Date;
-import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@Transactional
 public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
-    private final MailService mailService;
-    private final PasswordResetTokenRepository passwordResetTokenRepository;
     private final UserVerifiedRepository userVerifiedRepository;
+    private final PasswordResetTokenRepository passwordResetTokenRepository;
     private final PasswordEncoder passwordEncoder;
-    private final ChatMessageRepository chatMessageRepository;
-    private final ChatConversationRepository chatConversationRepository;
-    private final ProductReviewRepository productReviewRepository;
-    private final ProductRepository productRepository;
-    private final ArticleRepository articleRepository;
-    private final VeterinarianRepository veterinarianRepository;
+    private final MailService mailService;
 
-    public UserService(UserRepository userRepository, MailService mailService, PasswordResetTokenRepository passwordResetTokenRepository, UserVerifiedRepository userVerifiedRepository, PasswordEncoder passwordEncoder, ChatMessageRepository chatMessageRepository, ChatConversationRepository chatConversationRepository, ProductReviewRepository productReviewRepository, ProductRepository productRepository, ArticleRepository articleRepository, VeterinarianRepository veterinarianRepository) {
+    @Value("${app.base-url:http://localhost:3000}")
+    private String baseUrl;
+
+    public UserService(
+            UserRepository userRepository,
+            UserVerifiedRepository userVerifiedRepository,
+            PasswordResetTokenRepository passwordResetTokenRepository,
+            PasswordEncoder passwordEncoder,
+            MailService mailService) {
         this.userRepository = userRepository;
-        this.mailService = mailService;
-        this.passwordResetTokenRepository = passwordResetTokenRepository;
         this.userVerifiedRepository = userVerifiedRepository;
+        this.passwordResetTokenRepository = passwordResetTokenRepository;
         this.passwordEncoder = passwordEncoder;
-        this.chatMessageRepository = chatMessageRepository;
-        this.chatConversationRepository = chatConversationRepository;
-        this.productReviewRepository = productReviewRepository;
-        this.productRepository = productRepository;
-        this.articleRepository = articleRepository;
-        this.veterinarianRepository = veterinarianRepository;
+        this.mailService = mailService;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
+        return user;
     }
 
     public void createUser(UserRegisterRequestDTO request) {
-        userRepository.findByEmail(request.email().trim().toLowerCase())
-                .ifPresent(user -> {
-                    throw new EmailAlreadyUsedException("Esse e-mail já está em uso.");
-                });
-
-        userRepository.findByUsername(request.username().trim().toLowerCase())
-                .ifPresent(user -> {
-                    throw new UsernameAlreadyUsedExcpetion("Esse nome de usuário já está em uso.");
-                });
-
-        User user = new User();
-        user.setName(request.name());
-        user.setEmail(request.email());
-        user.setUsername(request.username());
-        user.setPassword(passwordEncoder.encode(request.password()));
-        user.setSituation(UserSituation.PENDING);
-        if (request.userRole() != null) {
-            user.setRole(request.userRole());
-        } else {
-            user.setRole(UserRole.USER);
+        // Check if username already exists
+        if (userRepository.findByUsername(request.username()).isPresent()) {
+            throw new UsernameAlreadyUsedExcpetion("Username já está em uso.");
         }
-        userRepository.save(user);
 
-        UserVerified verification = createAndSaveVerificationToken(user);
+        // Check if email already exists
+        if (userRepository.findByEmail(request.email()).isPresent()) {
+            throw new EmailAlreadyUsedException("Email já está em uso.");
+        }
+
+        // Create new user
+        User user = new User();
+        user.setUsername(request.username());
+        user.setEmail(request.email());
+        user.setPassword(passwordEncoder.encode(request.password()));
+        user.setName(request.name());
+        user.setRole(request.userRole() != null ? request.userRole() : UserRole.USER);
+        user.setSituation(UserSituation.PENDING);
+
+        User savedUser = userRepository.save(user);
+
+        // Create verification token
+        UserVerified verification = new UserVerified();
+        verification.setUser(savedUser);
+        verification.setVerificationToken(UUID.randomUUID().toString());
         userVerifiedRepository.save(verification);
 
-        String url = "https://kaiju.com/verify/" + verification.getVerificationToken();
-        mailService.sendAccountVerificationEmail(user.getEmail(), url, user.getUsername());
-
+        // Send verification email
+        String verificationUrl = baseUrl + "/api/auth/verify/" + verification.getVerificationToken();
+        mailService.sendAccountVerificationEmail(savedUser.getEmail(), verificationUrl, savedUser.getUsername());
     }
-
-    public List<User> readUsers() {
-        return userRepository.findAll();
-    }
-
-    public User getUserById(UUID id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado."));
-    }
-
-    @Transactional
-    public void updateUser(UUID userID, UserUpdateRequestDTO request) {
-        User user = userRepository.findById(userID)
-                .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado."));
-
-        if (request.username() != null) {
-            user.setUsername(request.username());
-        }
-        if (request.name() != null) {
-            user.setName(request.name());
-        }
-        if (request.description() != null) {
-            user.setDescription(request.description());
-        }
-        if (request.avatar() != null) {
-            user.setAvatar(request.avatar());
-        }
-        if (request.header() != null) {
-            user.setHeader(request.header());
-        }
-        if (request.password() != null) {
-            user.setPassword(passwordEncoder.encode(request.password()));
-        }
-
-        userRepository.save(user);
-
-    }
-    
-    @Transactional
-    public void deleteUser(UUID id) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado."));
-
-        chatMessageRepository.deleteBySender(user);
-
-        chatConversationRepository.deleteByUser(user);
-        
-        productReviewRepository.deleteByUser(user);
-
-        productRepository.deleteBySeller(user);
-
-        articleRepository.deleteByAuthor(user);
-
-        passwordResetTokenRepository.deleteByUser(user);
-
-        userVerifiedRepository.deleteByUser(user);
-
-        veterinarianRepository.findByUser(user).ifPresent(veterinarianRepository::delete);
-
-        userRepository.delete(user);
-    }
-
 
     public String verifyUser(String token) {
-        Optional<UserVerified> optionalUserVerified = userVerifiedRepository.findByVerificationToken(token);
+        UserVerified verification = userVerifiedRepository.findByVerificationToken(token)
+                .orElseThrow(() -> new IllegalArgumentException("Token de verificação inválido."));
 
-        if (optionalUserVerified.isEmpty())
-            return "Token inválido ou expirado.";
+        if (verification.isVerified()) {
+            return "Usuário já foi verificado anteriormente.";
+        }
 
-        UserVerified verification = optionalUserVerified.get();
-
-        if (verification.isExpired())
-            return "Token expirado. Solicite um novo.";
+        if (verification.isExpired()) {
+            throw new IllegalArgumentException("Token de verificação expirado. Solicite um novo link.");
+        }
 
         User user = verification.getUser();
         user.setSituation(UserSituation.VERIFIED);
         userRepository.save(user);
-        userVerifiedRepository.delete(verification);
 
-        return "Conta verificada com sucesso!";
+        verification.setVerifiedAt(new Date());
+        userVerifiedRepository.save(verification);
+
+        return "Usuário verificado com sucesso!";
     }
 
     public void resendVerificationEmail(String email) {
-        User user = userRepository.findByEmail(email.trim().toLowerCase())
-                .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado."));
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("Email não encontrado."));
 
-        Optional<UserVerified> existing = userVerifiedRepository.findByUser(user);
-
-        if (existing.isPresent() && !existing.get().isExpired()) {
-            throw new IllegalArgumentException("Você possui um link válido, cheque seu e-mail.");
+        if (user.getSituation() == UserSituation.VERIFIED) {
+            throw new IllegalArgumentException("Usuário já está verificado.");
         }
 
-        existing.ifPresent(userVerifiedRepository::delete);
+        // Delete old verification if exists
+        userVerifiedRepository.findByUser(user).ifPresent(userVerifiedRepository::delete);
 
-        UserVerified newVerification = createAndSaveVerificationToken(user);
+        // Create new verification token
+        UserVerified verification = new UserVerified();
+        verification.setUser(user);
+        verification.setVerificationToken(UUID.randomUUID().toString());
+        userVerifiedRepository.save(verification);
 
-        String url = "https://kaiju.com/verify/" + newVerification.getVerificationToken();
-        mailService.sendResendVerificationEmail(user.getEmail(), url, user.getUsername());
+        // Send verification email
+        String verificationUrl = baseUrl + "/api/auth/verify/" + verification.getVerificationToken();
+        mailService.sendResendVerificationEmail(user.getEmail(), verificationUrl, user.getUsername());
     }
-
 
     public void sendResetPasswordEmail(String email) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado."));
+                .orElseThrow(() -> new EntityNotFoundException("Email não encontrado."));
 
-        passwordResetTokenRepository.deleteByUser(user); // limpa tokens antigos
+        // Delete old reset token if exists
+        passwordResetTokenRepository.deleteByUser(user);
 
-        PasswordResetToken token = new PasswordResetToken();
-        token.setUser(user);
-        token.setToken(UUID.randomUUID().toString());
-        token.setExpiration(Instant.now().plusSeconds(900)); // 15 min
-        passwordResetTokenRepository.save(token);
+        // Create new reset token
+        PasswordResetToken resetToken = new PasswordResetToken();
+        resetToken.setUser(user);
+        resetToken.setToken(UUID.randomUUID().toString());
+        resetToken.setExpiration(Instant.now().plusSeconds(3600)); // 1 hour
+        passwordResetTokenRepository.save(resetToken);
 
-        String resetUrl = "https://kaiju.com/reset-password/" + token.getToken();
+        // Send reset email
+        String resetUrl = baseUrl + "/reset-password?token=" + resetToken.getToken();
         mailService.sendPasswordResetEmail(user.getEmail(), resetUrl, user.getUsername());
     }
 
     public void resetPassword(String token, String newPassword) {
         PasswordResetToken resetToken = passwordResetTokenRepository.findByToken(token)
-                .orElseThrow(() -> new IllegalArgumentException("Token inválido ou expirado."));
+                .orElseThrow(() -> new IllegalArgumentException("Token de redefinição inválido."));
 
-        if (resetToken.getExpiration().isBefore(Instant.now())) {
-            throw new IllegalArgumentException("Token expirado. Solicite um novo.");
+        if (resetToken.isExpired()) {
+            throw new IllegalArgumentException("Token de redefinição expirado. Solicite um novo link.");
         }
 
         User user = resetToken.getUser();
-        user.setPassword(passwordEncoder.encode(newPassword));  // Criptografa a nova senha
+        user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
 
-        passwordResetTokenRepository.deleteByToken(resetToken.getToken());
+        // Delete used token
+        passwordResetTokenRepository.deleteByToken(token);
     }
 
     public boolean validateResetToken(String token) {
-        Optional<PasswordResetToken> resetToken = passwordResetTokenRepository.findByToken(token);
-        return resetToken.isPresent() && resetToken.get().getExpiration().isAfter(Instant.now());
+        return passwordResetTokenRepository.findByToken(token)
+                .map(resetToken -> !resetToken.isExpired())
+                .orElse(false);
     }
 
-
-    private UserVerified createAndSaveVerificationToken(User user) {
-        UserVerified verification = new UserVerified();
-        verification.setUser(user);
-        verification.setVerificationToken(UUID.randomUUID().toString());
-        verification.setCreatedAt(new Date());
-        verification.setExpiresAt(new Date(System.currentTimeMillis() + (long) 900000));
-
-        return userVerifiedRepository.save(verification);
+    @Transactional(readOnly = true)
+    public User getUserById(UUID userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
     }
 
-    @Transactional
+    public void updateUser(UUID userId, UserUpdateRequestDTO request) {
+        User user = getUserById(userId);
+
+        // Check if username is being changed and if it's already taken
+        if (request.username() != null && !request.username().equals(user.getUsername())) {
+            if (userRepository.findByUsername(request.username()).isPresent()) {
+                throw new UsernameAlreadyUsedExcpetion("Username já está em uso.");
+            }
+            user.setUsername(request.username());
+        }
+
+        if (request.name() != null) {
+            user.setName(request.name());
+        }
+
+        if (request.description() != null) {
+            user.setDescription(request.description());
+        }
+
+        if (request.avatar() != null) {
+            user.setAvatar(request.avatar());
+        }
+
+        if (request.header() != null) {
+            user.setHeader(request.header());
+        }
+
+        if (request.password() != null && !request.password().isEmpty()) {
+            user.setPassword(passwordEncoder.encode(request.password()));
+        }
+
+        userRepository.save(user);
+    }
+
+    public void deleteUser(UUID userId) {
+        User user = getUserById(userId);
+
+        // Delete related entities
+        userVerifiedRepository.findByUser(user).ifPresent(userVerifiedRepository::delete);
+        passwordResetTokenRepository.deleteByUser(user);
+
+        userRepository.delete(user);
+    }
+
     public void becomeVeterinarian(UUID userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado."));
+        User user = getUserById(userId);
         user.setRole(UserRole.VETERINARIAN);
         userRepository.save(user);
     }
 
-    @Transactional
     public void becomeSeller(UUID userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado."));
+        User user = getUserById(userId);
         user.setRole(UserRole.SELLER);
         userRepository.save(user);
     }
-
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado: " + username));
-    }
 }
+

@@ -37,8 +37,12 @@ export interface CreateProductRequest {
   description: string;
   category: ProductCategory;
   price: number;
+  status: ProductStatus;
   images?: string[];
   stockQuantity: number;
+  brand?: string;
+  manufacturer?: string;
+  tags?: string[];
 }
 
 export interface UpdateProductRequest {
