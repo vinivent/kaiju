@@ -4,6 +4,8 @@ import com.cesar.kaiju.dto.LoginRequestDTO;
 import com.cesar.kaiju.dto.LoginResponseDTO;
 import com.cesar.kaiju.dto.ResetPasswordRequestDTO;
 import com.cesar.kaiju.dto.UserRegisterRequestDTO;
+import com.cesar.kaiju.exception.EmailAlreadyUsedException;
+import com.cesar.kaiju.exception.UsernameAlreadyUsedExcpetion;
 import com.cesar.kaiju.service.UserService;
 import com.cesar.kaiju.util.JwtUtil;
 import jakarta.persistence.EntityNotFoundException;
@@ -29,24 +31,29 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginRequestDTO request) {
-        Authentication authentication = new UsernamePasswordAuthenticationToken(
-                request.username(), request.password());
-        authenticationManager.authenticate(authentication);
-        String token = jwtUtil.generateToken(request.username());
+    public ResponseEntity<Object> login(@RequestBody LoginRequestDTO request) {
+        try {
+            Authentication authentication = new UsernamePasswordAuthenticationToken(
+                    request.username(), request.password());
+            authenticationManager.authenticate(authentication);
+            String token = jwtUtil.generateToken(request.username());
 
-        ResponseCookie cookie = ResponseCookie.from("token", token)
-                .httpOnly(true)
-                .secure(false)
-                .sameSite("Lax")
-                .path("/")
-                .maxAge(7 * 24 * 60 * 60)
-                .build();
+            ResponseCookie cookie = ResponseCookie.from("token", token)
+                    .httpOnly(true)
+                    .secure(false)
+                    .sameSite("Lax")
+                    .path("/")
+                    .maxAge(7 * 24 * 60 * 60)
+                    .build();
 
-        LoginResponseDTO response = new LoginResponseDTO(token, "Login realizado com sucesso.");
-        return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, cookie.toString())
-                .body(response);
+            LoginResponseDTO response = new LoginResponseDTO(token, "Login realizado com sucesso.");
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                    .body(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Credenciais inválidas.");
+        }
     }
 
     @PostMapping("/logout")
@@ -92,9 +99,12 @@ public class AuthController {
         try {
             userService.createUser(request);
             return ResponseEntity.ok("Usuário registrado com sucesso. Verifique seu e-mail.");
+        } catch (EmailAlreadyUsedException | UsernameAlreadyUsedExcpetion e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Erro ao verificar usuário.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Dados inválidos. Verifique as informações fornecidas.");
         }
     }
 
@@ -114,12 +124,13 @@ public class AuthController {
     public ResponseEntity<String> resendVerification(@RequestBody String email) {
         try {
             userService.resendVerificationEmail(email);
-            return ResponseEntity.ok("Link de verificação reenviado.");
+            return ResponseEntity.ok("Se o email estiver cadastrado, você receberá um link de verificação.");
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Dados inválidos. Verifique as informações fornecidas.");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Erro interno ao reenviar verificação.");
+                    .body("Erro ao processar solicitação. Tente novamente mais tarde.");
         }
     }
 
@@ -127,12 +138,12 @@ public class AuthController {
     public ResponseEntity<String> forgotPassword(@RequestBody String email) {
         try {
             userService.sendResetPasswordEmail(email);
-            return ResponseEntity.ok("Instruções de redefinição de senha enviadas.");
+            return ResponseEntity.ok("Se o email estiver cadastrado, você receberá instruções de redefinição de senha.");
         } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            return ResponseEntity.ok("Se o email estiver cadastrado, você receberá instruções de redefinição de senha.");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Erro ao processar redefinição de senha.");
+                    .body("Erro ao processar solicitação. Tente novamente mais tarde.");
         }
     }
 

@@ -17,14 +17,16 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(EmailAlreadyUsedException.class)
     public ResponseEntity<String> handleEmailAlreadyUsed(EmailAlreadyUsedException e) {
-        return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(e.getMessage());
+        // Generic message - don't reveal that email is already used
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body("Dados inválidos. Verifique as informações fornecidas.");
     }
 
     @ExceptionHandler(UsernameAlreadyUsedExcpetion.class)
     public ResponseEntity<String> handleUsernameAlreadyUsed(UsernameAlreadyUsedExcpetion e) {
-        return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(e.getMessage());
+        // Generic message - don't reveal that username is already used
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body("Dados inválidos. Verifique as informações fornecidas.");
     }
 
     @ExceptionHandler(Exception.class)

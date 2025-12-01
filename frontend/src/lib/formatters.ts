@@ -159,9 +159,23 @@ export function isNonNegativeNumber(value: number): boolean {
 
 /**
  * Removes all non-digit characters from phone number
+ * and ensures it has Brazil country code (55) at the beginning
  */
 export function cleanPhoneNumber(phone: string): string {
-  return phone.replace(/\D/g, "");
+  const numbers = phone.replace(/\D/g, "");
+
+  // If already starts with 55, return as is
+  if (numbers.startsWith("55")) {
+    return numbers;
+  }
+
+  // If starts with 0, remove it (common in Brazilian numbers)
+  const withoutLeadingZero = numbers.startsWith("0")
+    ? numbers.slice(1)
+    : numbers;
+
+  // Add country code 55 if not present
+  return `55${withoutLeadingZero}`;
 }
 
 /**
