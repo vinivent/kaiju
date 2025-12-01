@@ -1,5 +1,3 @@
-import { UUID } from "crypto";
-
 export enum UserRole {
   USER = 'USER',
   VETERINARIAN = 'VETERINARIAN',

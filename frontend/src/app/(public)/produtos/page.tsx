@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import { Package, ArrowUpDown } from "lucide-react";
 import { Product } from "@/features/products/model";
@@ -62,16 +62,12 @@ export default function ProductsPage() {
   };
 
   useEffect(() => {
-    loadProducts();
-  }, [searchQuery, selectedCategory, sortBy, currentPage]);
-
-  useEffect(() => {
     if (categoryParam) {
       setSelectedCategory(categoryParam as ProductCategory);
     }
   }, [categoryParam]);
 
-  const loadProducts = async () => {
+  const loadProducts = useCallback(async () => {
     setLoading(true);
     try {
       const params: ProductSearchParams = {
@@ -97,7 +93,11 @@ export default function ProductsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [searchQuery, selectedCategory, sortBy, currentPage]);
+
+  useEffect(() => {
+    loadProducts();
+  }, [loadProducts]);
 
   const handleClearFilters = () => {
     setSearchQuery("");

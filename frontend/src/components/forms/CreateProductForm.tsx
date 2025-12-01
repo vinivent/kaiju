@@ -182,13 +182,17 @@ export function CreateProductForm({ onSuccess }: CreateProductFormProps) {
       setImageUrl("");
       setTagInput("");
       onSuccess?.();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Erro ao criar produto:", error);
-      toast.error(
-        error?.response?.data?.message ||
-          error?.response?.data ||
-          "Erro ao criar produto. Tente novamente."
-      );
+      const errorData = error as {
+        response?: { data?: { message?: string } | string };
+      };
+      const errorMessage =
+        (typeof errorData?.response?.data === "object"
+          ? errorData.response.data?.message
+          : errorData?.response?.data) ||
+        "Erro ao criar produto. Tente novamente.";
+      toast.error(errorMessage);
     } finally {
       setIsSubmitting(false);
     }

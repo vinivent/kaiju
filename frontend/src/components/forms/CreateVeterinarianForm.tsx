@@ -17,6 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
+import Image from "next/image";
 import {
   formatPhone,
   formatCEP,
@@ -153,22 +154,29 @@ export function CreateVeterinarianForm({
       });
       setConsultationFeeDisplay("");
       onSuccess?.();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Erro ao criar perfil de veterinário:", error);
 
       // Extract error message from different possible formats
       let errorMessage = "Erro ao criar perfil. Tente novamente.";
 
-      if (error?.response?.data) {
-        if (typeof error.response.data === "string") {
-          errorMessage = error.response.data;
-        } else if (error.response.data.message) {
-          errorMessage = error.response.data.message;
-        } else if (error.response.data.error) {
-          errorMessage = error.response.data.error;
+      const errorData = error as {
+        response?: {
+          data?: string | { message?: string; error?: string };
+        };
+        message?: string;
+      };
+
+      if (errorData?.response?.data) {
+        if (typeof errorData.response.data === "string") {
+          errorMessage = errorData.response.data;
+        } else if (errorData.response.data.message) {
+          errorMessage = errorData.response.data.message;
+        } else if (errorData.response.data.error) {
+          errorMessage = errorData.response.data.error;
         }
-      } else if (error?.message) {
-        errorMessage = error.message;
+      } else if (errorData?.message) {
+        errorMessage = errorData.message;
       }
 
       // Handle specific error cases
@@ -264,14 +272,13 @@ export function CreateVeterinarianForm({
               placeholder="https://exemplo.com/foto.jpg"
             />
             {formData.imageUrl && isValidURL(formData.imageUrl) && (
-              <div className="mt-2">
-                <img
+              <div className="mt-2 relative w-32 h-32 rounded-md border border-input overflow-hidden">
+                <Image
                   src={formData.imageUrl}
                   alt="Preview"
-                  className="w-32 h-32 object-cover rounded-md border border-input"
-                  onError={(e) => {
-                    e.currentTarget.style.display = "none";
-                  }}
+                  fill
+                  className="object-cover"
+                  sizes="128px"
                 />
               </div>
             )}

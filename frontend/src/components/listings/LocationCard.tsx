@@ -2,6 +2,7 @@ import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Star, MapPin, Phone, Mail, Globe, Clock, AlertCircle, CheckCircle2 } from 'lucide-react';
+import Image from 'next/image';
 import { HealthcareLocation } from '@/features/healthcare-locations/model';
 import { LocationType } from '@/app/types/common';
 
@@ -18,10 +19,12 @@ export function LocationCard({ location, typeLabels }: LocationCardProps) {
             <CardHeader className="p-0">
                 <div className="relative h-56 overflow-hidden bg-gradient-to-br from-muted to-muted/50 rounded-t-xl">
                     {location.imageUrl ? (
-                        <img
+                        <Image
                             src={location.imageUrl}
                             alt={location.name}
-                            className="w-full h-full object-cover"
+                            fill
+                            className="object-cover"
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                         />
                     ) : (
                         <div className="w-full h-full flex items-center justify-center">

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Stethoscope, Filter, ArrowUpDown, Video } from "lucide-react";
 import { Veterinarian } from "@/features/veterinarians/models";
 import { veterinarianService } from "@/features/veterinarians/services";
@@ -61,20 +61,8 @@ export default function VeterinariansPage() {
     [ReptileSpecialty.AMPHIBIANS]: "Anfíbios",
     [ReptileSpecialty.GENERAL]: "Geral",
   };
-  
-  useEffect(() => {
-    loadVeterinarians();
-  }, [
-    searchQuery,
-    selectedSpecialty,
-    selectedCity,
-    selectedState,
-    onlineConsultation,
-    sortBy,
-    currentPage,
-  ]);
 
-  const loadVeterinarians = async () => {
+  const loadVeterinarians = useCallback(async () => {
     setLoading(true);
     try {
       const params = {
@@ -100,7 +88,19 @@ export default function VeterinariansPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [
+    searchQuery,
+    selectedSpecialty,
+    selectedCity,
+    selectedState,
+    onlineConsultation,
+    sortBy,
+    currentPage,
+  ]);
+
+  useEffect(() => {
+    loadVeterinarians();
+  }, [loadVeterinarians]);
 
   const handleClearFilters = () => {
     setSearchQuery("");

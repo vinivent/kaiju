@@ -1,7 +1,8 @@
 "use client"
 
-import { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useState, useEffect, useCallback } from 'react';
+import { useParams } from 'next/navigation';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -38,13 +39,7 @@ export default function ProductDetailPage() {
     const [selectedImageIndex, setSelectedImageIndex] = useState(0);
     const [error, setError] = useState<string | null>(null);
 
-    useEffect(() => {
-        if (productId) {
-            loadProduct();
-        }
-    }, [productId]);
-
-    const loadProduct = async () => {
+    const loadProduct = useCallback(async () => {
         if (!productId) return;
         setLoading(true);
         setError(null);
@@ -66,7 +61,13 @@ export default function ProductDetailPage() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [productId]);
+
+    useEffect(() => {
+        if (productId) {
+            loadProduct();
+        }
+    }, [productId, loadProduct]);
 
     const handleAddToCart = () => {
         if (product) {
@@ -141,12 +142,14 @@ export default function ProductDetailPage() {
                     {/* Images Section */}
                     <div className="space-y-4">
                         {/* Main Image */}
-                        <div className="aspect-square overflow-hidden rounded-xl bg-muted border">
+                        <div className="aspect-square overflow-hidden rounded-xl bg-muted border relative">
                             {images.length > 0 ? (
-                                <img
+                                <Image
                                     src={images[selectedImageIndex]}
                                     alt={product.name}
-                                    className="w-full h-full object-cover"
+                                    fill
+                                    className="object-cover"
+                                    sizes="(max-width: 768px) 100vw, 50vw"
                                 />
                             ) : (
                                 <div className="w-full h-full flex items-center justify-center">
@@ -162,15 +165,17 @@ export default function ProductDetailPage() {
                                     <button
                                         key={index}
                                         onClick={() => setSelectedImageIndex(index)}
-                                        className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${selectedImageIndex === index
+                                        className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all relative ${selectedImageIndex === index
                                             ? 'border-primary'
                                             : 'border-transparent hover:border-muted-foreground'
                                             }`}
                                     >
-                                        <img
+                                        <Image
                                             src={img}
                                             alt={`${product.name} ${index + 1}`}
-                                            className="w-full h-full object-cover"
+                                            fill
+                                            className="object-cover"
+                                            sizes="80px"
                                         />
                                     </button>
                                 ))}

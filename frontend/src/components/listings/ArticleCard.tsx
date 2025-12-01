@@ -1,7 +1,8 @@
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Star, Eye, Heart, MessageCircle, User, Calendar, Tag, BookOpen } from 'lucide-react';
+import { Eye, Heart, MessageCircle, User, Calendar, Tag, BookOpen } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Article } from '@/features/articles/model';
 import { ArticleCategory } from '@/app/types/common';
 
@@ -28,13 +29,13 @@ export function ArticleCard({ article, categoryLabels }: ArticleCardProps) {
                 <Link href={`/artigos/${article.id}`}>
                     <div className="relative h-56 overflow-hidden bg-gradient-to-br from-muted to-muted/50 cursor-pointer">
                         {article.imageUrl ? (
-                            <>
-                                <img
-                                    src={article.imageUrl}
-                                    alt={article.title}
-                                    className="w-full h-full object-cover"
-                                />
-                            </>
+                            <Image
+                                src={article.imageUrl}
+                                alt={article.title}
+                                fill
+                                className="object-cover"
+                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                            />
                         ) : (
                             <div className="w-full h-full flex items-center justify-center">
                                 <BookOpen className="h-20 w-20 text-muted-foreground opacity-50" />

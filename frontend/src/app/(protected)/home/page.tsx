@@ -5,7 +5,6 @@ import { useUser } from "@/contexts/UserContext";
 import {
   Package,
   Stethoscope,
-  BookOpen,
   ArrowRight,
   TrendingUp,
   Sparkles,
@@ -24,7 +23,6 @@ import { Button } from "@/components/ui/button";
 import Loader from "@/components/ui/Loader";
 import { userService } from "@/features/user/service";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { productService } from "@/features/products/services";
 
@@ -46,11 +44,12 @@ export default function HomePage() {
       await userService.becomeVeterinarian();
       await refreshUser();
       toast.success("Perfil de veterinário ativado com sucesso!");
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Erro ao atualizar role:", error);
-      toast.error(
-        error?.response?.data || "Erro ao atualizar role. Tente novamente."
-      );
+      const errorMessage =
+        (error as { response?: { data?: string } })?.response?.data ||
+        "Erro ao atualizar role. Tente novamente.";
+      toast.error(errorMessage);
     } finally {
       setIsUpdatingRole(false);
     }
@@ -62,11 +61,12 @@ export default function HomePage() {
       await userService.becomeSeller();
       await refreshUser();
       toast.success("Perfil de vendedor ativado com sucesso!");
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Erro ao atualizar role:", error);
-      toast.error(
-        error?.response?.data || "Erro ao atualizar role. Tente novamente."
-      );
+      const errorMessage =
+        (error as { response?: { data?: string } })?.response?.data ||
+        "Erro ao atualizar role. Tente novamente.";
+      toast.error(errorMessage);
     } finally {
       setIsUpdatingRole(false);
     }

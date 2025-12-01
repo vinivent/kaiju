@@ -3,6 +3,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Star, Heart, Package, ShoppingCart } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Product } from '@/features/products/model';
 import { ProductCategory } from '@/app/types/common';
 import { useCart } from '@/contexts/CartContext';
@@ -42,10 +43,12 @@ export function ProductCard({ product, categoryLabels }: ProductCardProps) {
                             <Heart className="h-4 w-4" />
                         </Button>
                         {product.images && product.images.length > 0 ? (
-                            <img
+                            <Image
                                 src={product.images[0]}
                                 alt={product.name}
-                                className="w-full h-full object-cover"
+                                fill
+                                className="object-cover"
+                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                             />
                         ) : (
                             <div className="w-full h-full flex items-center justify-center">
