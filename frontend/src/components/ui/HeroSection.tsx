@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Shield, Sparkles, Zap, ArrowRight, Stethoscope, ShoppingBag, BookOpen } from 'lucide-react';
+import { Shield, Sparkles, Zap, ArrowRight } from 'lucide-react';
 import Image from 'next/image';
 
 export function HeroSection() {

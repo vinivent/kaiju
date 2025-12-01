@@ -10,6 +10,7 @@ import { Star, MapPin, Phone, Video, User, Award } from "lucide-react";
 import { Veterinarian } from "@/features/veterinarians/models";
 import { ReptileSpecialty } from "@/app/types/common";
 import { createWhatsAppLink } from "@/lib/formatters";
+import Image from "next/image";
 
 interface VeterinarianCardProps {
   veterinarian: Veterinarian;
@@ -25,10 +26,12 @@ export function VeterinarianCard({
       <CardHeader className="p-0">
         <div className="relative h-56 overflow-hidden bg-gradient-to-br from-muted to-muted/50 rounded-t-xl">
           {vet.profilePicture ? (
-            <img
+            <Image
               src={vet.profilePicture}
               alt={vet.fullName}
-              className="w-full h-full object-cover"
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center">

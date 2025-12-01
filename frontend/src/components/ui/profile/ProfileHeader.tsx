@@ -1,5 +1,6 @@
 import { UserResponse } from '@/features/user/model';
 import { Button } from '@/components/ui/button';
+import Image from 'next/image';
 
 interface ProfileHeaderProps {
     user: UserResponse;
@@ -12,11 +13,13 @@ export function ProfileHeader({ user, isOwner, isEditing, onEdit }: ProfileHeade
     return (
         <div className="w-full relative">
             {user.header ? (
-                <div className="w-full h-64 md:h-80 overflow-hidden">
-                    <img
+                <div className="w-full h-64 md:h-80 relative overflow-hidden">
+                    <Image
                         src={user.header}
                         alt={`Banner de ${user.name}`}
-                        className="w-full h-full object-cover"
+                        fill
+                        className="object-cover"
+                        sizes="100vw"
                     />
                 </div>
             ) : (

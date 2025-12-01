@@ -1,3 +1,5 @@
+import Image from 'next/image';
+
 interface ProfileAvatarProps {
     name: string;
     avatar?: string;
@@ -13,11 +15,15 @@ interface ProfileAvatarProps {
   export function ProfileAvatar({ name, avatar, size = 'lg' }: ProfileAvatarProps) {
     if (avatar) {
       return (
-        <img
-          src={avatar}
-          alt={name}
-          className={`${sizeClasses[size]} rounded-full object-cover border-4 border-card shadow-xl ring-2 ring-primary/20`}
-        />
+        <div className={`${sizeClasses[size]} relative rounded-full overflow-hidden border-4 border-card shadow-xl ring-2 ring-primary/20`}>
+          <Image
+            src={avatar}
+            alt={name}
+            fill
+            className="object-cover"
+            sizes="(max-width: 768px) 64px, (max-width: 1200px) 96px, 128px"
+          />
+        </div>
       );
     }
   

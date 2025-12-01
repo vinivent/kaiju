@@ -4,6 +4,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
+import Image from 'next/image';
 
 interface CartItem {
     id: string;
@@ -115,13 +116,12 @@ export function CartModal({
                                             )}
                                         >
                                             <div className="relative h-16 w-16 md:h-20 md:w-20 rounded-lg overflow-hidden bg-muted flex-shrink-0">
-                                                <img
-                                                    src={item.image}
+                                                <Image
+                                                    src={item.image || '/placeholder-product.png'}
                                                     alt={item.name}
-                                                    className="h-full w-full object-cover"
-                                                    onError={(e) => {
-                                                        (e.target as HTMLImageElement).src = '/placeholder-product.png';
-                                                    }}
+                                                    fill
+                                                    className="object-cover"
+                                                    sizes="(max-width: 768px) 64px, 80px"
                                                 />
                                             </div>
 
