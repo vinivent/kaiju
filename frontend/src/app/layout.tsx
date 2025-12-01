@@ -28,7 +28,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
-      <body className={`${geistMono.variable} antialiased bg-background`}>
+      <body 
+        className={`${geistMono.variable} antialiased bg-background`}
+        suppressHydrationWarning
+      >
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
           <Providers>
             <Toaster position="top-right" />

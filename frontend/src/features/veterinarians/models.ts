@@ -33,7 +33,7 @@ export interface Veterinarian {
   state: string;
   zipCode: string;
   bio: string;
-  imageUrl?: string;
+  profilePicture?: string;
   rating: number;
   reviewCount: number;
   consultationFee: number;
@@ -75,6 +75,7 @@ export interface CreateVeterinarianRequest {
   profilePicture?: string;
   isAvailableForChat?: boolean;
   acceptsNewPatients?: boolean;
+  consultationFee?: number;
 }
 
 // Form data interface - for form collection

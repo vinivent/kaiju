@@ -17,6 +17,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { Plus, X } from "lucide-react";
 import { toast } from "sonner";
+import {
+  formatCurrencyInput,
+  parseCurrency,
+  isValidURL,
+  formatNumber,
+} from "@/lib/formatters";
 
 interface CreateProductFormProps {
   onSuccess?: () => void;
@@ -25,6 +31,7 @@ interface CreateProductFormProps {
 export function CreateProductForm({ onSuccess }: CreateProductFormProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [priceDisplay, setPriceDisplay] = useState("");
   const [formData, setFormData] = useState<CreateProductRequest>({
     name: "",
     description: "",
@@ -61,6 +68,10 @@ export function CreateProductForm({ onSuccess }: CreateProductFormProps) {
 
   const addImage = () => {
     if (imageUrl.trim()) {
+      if (!isValidURL(imageUrl.trim())) {
+        toast.error("URL inválida. Por favor, insira uma URL válida.");
+        return;
+      }
       setFormData({
         ...formData,
         images: [...(formData.images || []), imageUrl.trim()],
@@ -91,13 +102,53 @@ export function CreateProductForm({ onSuccess }: CreateProductFormProps) {
     setFormData({ ...formData, tags: newTags });
   };
 
+  const validateForm = (): string | null => {
+    if (!formData.name.trim()) {
+      return "Nome do produto é obrigatório.";
+    }
+    if (formData.name.trim().length < 3) {
+      return "Nome do produto deve ter pelo menos 3 caracteres.";
+    }
+    if (!formData.description.trim()) {
+      return "Descrição é obrigatória.";
+    }
+    if (formData.description.trim().length < 10) {
+      return "Descrição deve ter pelo menos 10 caracteres.";
+    }
+    if (formData.price <= 0) {
+      return "Preço deve ser maior que zero.";
+    }
+    if (formData.price > 999999.99) {
+      return "Preço não pode ser maior que R$ 999.999,99.";
+    }
+    if (formData.stockQuantity < 0) {
+      return "Quantidade em estoque não pode ser negativa.";
+    }
+    if (formData.stockQuantity > 999999) {
+      return "Quantidade em estoque não pode ser maior que 999.999.";
+    }
+    if (formData.images && formData.images.length > 0) {
+      const invalidUrls = formData.images.filter((url) => !isValidURL(url));
+      if (invalidUrls.length > 0) {
+        return "Uma ou mais URLs de imagens são inválidas.";
+      }
+    }
+    return null;
+  };
+
   const handleSubmit = async () => {
+    const validationError = validateForm();
+    if (validationError) {
+      toast.error(validationError);
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       // Prepare data: remove empty optional fields
       const submitData: CreateProductRequest = {
-        name: formData.name,
-        description: formData.description,
+        name: formData.name.trim(),
+        description: formData.description.trim(),
         category: formData.category,
         price: formData.price,
         status: formData.status,
@@ -127,6 +178,7 @@ export function CreateProductForm({ onSuccess }: CreateProductFormProps) {
         manufacturer: "",
         tags: [],
       });
+      setPriceDisplay("");
       setImageUrl("");
       setTagInput("");
       onSuccess?.();
@@ -142,8 +194,30 @@ export function CreateProductForm({ onSuccess }: CreateProductFormProps) {
     }
   };
 
+  const handleDialogChange = (open: boolean) => {
+    setIsDialogOpen(open);
+    if (!open) {
+      // Reset form when dialog closes
+      setFormData({
+        name: "",
+        description: "",
+        category: ProductCategory.FOOD,
+        price: 0,
+        status: ProductStatus.ACTIVE,
+        stockQuantity: 0,
+        images: [],
+        brand: "",
+        manufacturer: "",
+        tags: [],
+      });
+      setPriceDisplay("");
+      setImageUrl("");
+      setTagInput("");
+    }
+  };
+
   return (
-    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+    <Dialog open={isDialogOpen} onOpenChange={handleDialogChange}>
       <DialogTrigger asChild>
         <Button className="cursor-pointer bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm hover:shadow-md transition-all whitespace-nowrap shrink-0">
           <Plus className="mr-2 h-4 w-4 shrink-0" />
@@ -240,17 +314,26 @@ export function CreateProductForm({ onSuccess }: CreateProductFormProps) {
             </label>
             <Input
               id="price"
-              type="number"
-              step="0.01"
-              min="0"
-              value={formData.price}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  price: parseFloat(e.target.value) || 0,
-                })
-              }
-              placeholder="0.00"
+              type="text"
+              value={priceDisplay}
+              onChange={(e) => {
+                const value = e.target.value;
+                const formatted = formatCurrencyInput(value);
+                setPriceDisplay(formatted);
+                const numericValue = parseCurrency(value);
+                if (numericValue >= 0 && numericValue <= 999999.99) {
+                  setFormData({
+                    ...formData,
+                    price: numericValue,
+                  });
+                }
+              }}
+              onBlur={() => {
+                if (formData.price === 0) {
+                  setPriceDisplay("");
+                }
+              }}
+              placeholder="0,00"
             />
           </div>
           <div className="grid gap-2">
@@ -259,15 +342,18 @@ export function CreateProductForm({ onSuccess }: CreateProductFormProps) {
             </label>
             <Input
               id="stock"
-              type="number"
-              min="0"
-              value={formData.stockQuantity}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  stockQuantity: parseInt(e.target.value) || 0,
-                })
-              }
+              type="text"
+              value={formData.stockQuantity || ""}
+              onChange={(e) => {
+                const numbers = formatNumber(e.target.value);
+                const value = numbers ? parseInt(numbers, 10) : 0;
+                if (value >= 0 && value <= 999999) {
+                  setFormData({
+                    ...formData,
+                    stockQuantity: value,
+                  });
+                }
+              }}
               placeholder="0"
             />
           </div>
@@ -313,6 +399,13 @@ export function CreateProductForm({ onSuccess }: CreateProductFormProps) {
                 type="url"
                 value={imageUrl}
                 onChange={(e) => setImageUrl(e.target.value)}
+                onBlur={(e) => {
+                  if (e.target.value && !isValidURL(e.target.value)) {
+                    toast.error(
+                      "URL inválida. Por favor, insira uma URL válida."
+                    );
+                  }
+                }}
                 placeholder="https://exemplo.com/imagem.jpg"
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {

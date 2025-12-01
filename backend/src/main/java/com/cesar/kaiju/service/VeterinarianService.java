@@ -24,22 +24,18 @@ import java.util.stream.Collectors;
 public class VeterinarianService {
 
     private final VeterinarianRepository veterinarianRepository;
-    private final UserRepository userRepository;
 
     public VeterinarianService(VeterinarianRepository veterinarianRepository, UserRepository userRepository) {
         this.veterinarianRepository = veterinarianRepository;
-        this.userRepository = userRepository;
     }
 
     public VeterinarianResponseDTO createVeterinarian(VeterinarianRequestDTO request) {
         User currentUser = getCurrentUser();
         
-        // Check if user already has a veterinarian profile
         if (veterinarianRepository.findByUser(currentUser).isPresent()) {
             throw new IllegalArgumentException("You already have a veterinarian profile. Please update your existing profile instead.");
         }
         
-        // Check if license number already exists
         if (veterinarianRepository.findByLicenseNumber(request.licenseNumber()).isPresent()) {
             throw new IllegalArgumentException("License number already registered");
         }
@@ -48,6 +44,10 @@ public class VeterinarianService {
         veterinarian.setUser(currentUser);
         veterinarian.setFullName(request.fullName());
         veterinarian.setLicenseNumber(request.licenseNumber());
+        return getVeterinarianResponseDTO(request, veterinarian);
+    }
+
+    private VeterinarianResponseDTO getVeterinarianResponseDTO(VeterinarianRequestDTO request, Veterinarian veterinarian) {
         veterinarian.setSpecializations(request.specializations());
         veterinarian.setBio(request.bio());
         veterinarian.setContactEmail(request.contactEmail());
@@ -66,7 +66,8 @@ public class VeterinarianService {
         veterinarian.setProfilePicture(request.profilePicture());
         veterinarian.setIsAvailableForChat(request.isAvailableForChat());
         veterinarian.setAcceptsNewPatients(request.acceptsNewPatients());
-        
+        veterinarian.setConsultationFee(request.consultationFee());
+
         Veterinarian savedVet = veterinarianRepository.save(veterinarian);
         return toResponseDTO(savedVet);
     }
@@ -104,34 +105,22 @@ public class VeterinarianService {
             Pageable pageable) {
         Page<Veterinarian> veterinarians;
         
-        // If query is provided, use search; otherwise use getAllVeterinarians with filters
         if (query != null && !query.trim().isEmpty()) {
             veterinarians = veterinarianRepository.searchVeterinarians(query.trim(), pageable);
         } else {
-            // Fall back to getAllVeterinarians with specialty filter if provided
             if (specialty != null) {
                 veterinarians = veterinarianRepository.findBySpecialization(specialty, pageable);
             } else {
                 veterinarians = veterinarianRepository.findAll(pageable);
             }
         }
-        
-        // Note: Additional filters (city, state, minExperience, onlineConsultation) 
-        // would ideally be handled in a comprehensive repository query for better performance.
-        // For now, basic filtering by specialty and search query is implemented.
-        
+
         return veterinarians.map(this::toResponseDTO);
     }
 
     @Transactional(readOnly = true)
     public Page<VeterinarianResponseDTO> getBySpecialization(VeterinarianSpecialization specialization, Pageable pageable) {
         Page<Veterinarian> veterinarians = veterinarianRepository.findBySpecialization(specialization, pageable);
-        return veterinarians.map(this::toResponseDTO);
-    }
-
-    @Transactional(readOnly = true)
-    public Page<VeterinarianResponseDTO> getByLocation(String city, String state, Pageable pageable) {
-        Page<Veterinarian> veterinarians = veterinarianRepository.findByLocation(city, state, pageable);
         return veterinarians.map(this::toResponseDTO);
     }
 
@@ -162,48 +151,7 @@ public class VeterinarianService {
         }
         
         veterinarian.setFullName(request.fullName());
-        veterinarian.setSpecializations(request.specializations());
-        veterinarian.setBio(request.bio());
-        veterinarian.setContactEmail(request.contactEmail());
-        veterinarian.setPhoneNumber(request.phoneNumber());
-        veterinarian.setClinicName(request.clinicName());
-        veterinarian.setClinicAddress(request.clinicAddress());
-        veterinarian.setCity(request.city());
-        veterinarian.setState(request.state());
-        veterinarian.setZipCode(request.zipCode());
-        veterinarian.setCountry(request.country());
-        veterinarian.setLatitude(request.latitude());
-        veterinarian.setLongitude(request.longitude());
-        veterinarian.setYearsOfExperience(request.yearsOfExperience());
-        veterinarian.setCertifications(request.certifications());
-        veterinarian.setLanguagesSpoken(request.languagesSpoken());
-        veterinarian.setProfilePicture(request.profilePicture());
-        veterinarian.setIsAvailableForChat(request.isAvailableForChat());
-        veterinarian.setAcceptsNewPatients(request.acceptsNewPatients());
-        
-        Veterinarian updatedVet = veterinarianRepository.save(veterinarian);
-        return toResponseDTO(updatedVet);
-    }
-
-    public void verifyVeterinarian(UUID id) {
-        Veterinarian veterinarian = veterinarianRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Veterinarian not found with id: " + id));
-        veterinarian.setIsVerified(true);
-        veterinarianRepository.save(veterinarian);
-        // TODO: Send verification notification email
-    }
-
-    public void updateChatAvailability(UUID id, Boolean available) {
-        Veterinarian veterinarian = veterinarianRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Veterinarian not found with id: " + id));
-        
-        User currentUser = getCurrentUser();
-        if (!veterinarian.getUser().getUserId().equals(currentUser.getUserId())) {
-            throw new SecurityException("You can only update your own availability");
-        }
-        
-        veterinarian.setIsAvailableForChat(available);
-        veterinarianRepository.save(veterinarian);
+        return getVeterinarianResponseDTO(request, veterinarian);
     }
 
     public void deleteVeterinarian(UUID id) {
@@ -243,6 +191,7 @@ public class VeterinarianService {
                 vet.getIsVerified(),
                 vet.getIsAvailableForChat(),
                 vet.getRating(),
+                vet.getConsultationFee(),
                 vet.getReviewCount(),
                 vet.getAcceptsNewPatients(),
                 vet.getCreatedAt(),

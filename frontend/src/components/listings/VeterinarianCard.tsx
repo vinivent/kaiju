@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Star, MapPin, Phone, Video, User, Award } from "lucide-react";
 import { Veterinarian } from "@/features/veterinarians/models";
 import { ReptileSpecialty } from "@/app/types/common";
-import { useEffect } from "react";
+import { createWhatsAppLink } from "@/lib/formatters";
 
 interface VeterinarianCardProps {
   veterinarian: Veterinarian;
@@ -24,9 +24,9 @@ export function VeterinarianCard({
     <Card className="group hover:shadow-2xl transition-all duration-300 overflow-hidden border-border/50 hover:border-primary/20 flex flex-col">
       <CardHeader className="p-0">
         <div className="relative h-56 overflow-hidden bg-gradient-to-br from-muted to-muted/50 rounded-t-xl">
-          {vet.imageUrl ? (
+          {vet.profilePicture ? (
             <img
-              src={vet.imageUrl}
+              src={vet.profilePicture}
               alt={vet.fullName}
               className="w-full h-full object-cover"
             />
@@ -114,16 +114,22 @@ export function VeterinarianCard({
       </CardContent>
 
       <CardFooter className="p-6 pt-0 flex gap-3">
-        <Button
-          variant="outline"
-          size="icon"
-          className="cursor-pointer w-full"
-          asChild
-        >
-          <a href={`https://wa.me/${vet.phoneNumber}`}>
-            <Phone className="h-4 w-4" />
-          </a>
-        </Button>
+        {vet.phoneNumber && (
+          <Button
+            variant="outline"
+            size="icon"
+            className="cursor-pointer w-full"
+            asChild
+          >
+            <a
+              href={createWhatsAppLink(vet.phoneNumber, vet.fullName)}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Phone className="h-4 w-4" />
+            </a>
+          </Button>
+        )}
       </CardFooter>
     </Card>
   );

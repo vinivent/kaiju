@@ -99,6 +99,8 @@ public class Veterinarian {
 
     private Integer reviewCount;
 
+    private Double consultationFee;
+
     @Column(nullable = false)
     private Boolean acceptsNewPatients;
 

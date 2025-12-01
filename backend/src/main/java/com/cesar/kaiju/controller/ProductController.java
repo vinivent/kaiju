@@ -36,6 +36,11 @@ public class ProductController {
         return ResponseEntity.ok(product);
     }
 
+    @GetMapping("/count")
+    public Long getProductCounts() {
+        return productService.getProductCount();
+    }
+
     @GetMapping
     public ResponseEntity<Page<ProductResponseDTO>> getAllProducts(
             @RequestParam(required = false) ProductStatus status,

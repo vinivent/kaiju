@@ -27,5 +27,6 @@ public record VeterinarianRequestDTO(
         List<String> languagesSpoken,
         String profilePicture,
         Boolean isAvailableForChat,
-        Boolean acceptsNewPatients
+        Boolean acceptsNewPatients,
+        Double consultationFee
 ) {}

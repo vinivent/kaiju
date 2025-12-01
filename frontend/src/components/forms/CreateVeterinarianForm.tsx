@@ -17,6 +17,18 @@ import {
 import { Input } from "@/components/ui/input";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
+import {
+  formatPhone,
+  formatCEP,
+  formatCurrencyInput,
+  formatState,
+  isValidEmail,
+  isValidPhone,
+  isValidCEP,
+  isValidURL,
+  isValidCRMV,
+  parseCurrency,
+} from "@/lib/formatters";
 
 interface CreateVeterinarianFormProps {
   onSuccess?: () => void;
@@ -27,6 +39,7 @@ export function CreateVeterinarianForm({
 }: CreateVeterinarianFormProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [consultationFeeDisplay, setConsultationFeeDisplay] = useState("");
   const [formData, setFormData] = useState<CreateVeterinarianFormData>({
     fullName: "",
     email: "",
@@ -63,7 +76,59 @@ export function CreateVeterinarianForm({
     }));
   };
 
+  const validateForm = (): string | null => {
+    if (!formData.fullName.trim()) {
+      return "Nome completo é obrigatório.";
+    }
+    if (formData.fullName.trim().length < 3) {
+      return "Nome completo deve ter pelo menos 3 caracteres.";
+    }
+    if (!formData.email.trim()) {
+      return "E-mail é obrigatório.";
+    }
+    if (!isValidEmail(formData.email)) {
+      return "E-mail inválido. Por favor, insira um e-mail válido.";
+    }
+    if (!formData.phone.trim()) {
+      return "Telefone é obrigatório.";
+    }
+    if (!isValidPhone(formData.phone)) {
+      return "Telefone inválido. Use o formato (00) 00000-0000.";
+    }
+    if (!formData.licenseNumber.trim()) {
+      return "Número de CRMV é obrigatório.";
+    }
+    if (!isValidCRMV(formData.licenseNumber)) {
+      return "Número de CRMV inválido.";
+    }
+    if (formData.specialties.length === 0) {
+      return "Selecione pelo menos uma especialidade.";
+    }
+    if (formData.yearsOfExperience < 0) {
+      return "Anos de experiência não podem ser negativos.";
+    }
+    if (formData.zipCode && !isValidCEP(formData.zipCode)) {
+      return "CEP inválido. Use o formato 00000-000.";
+    }
+    if (formData.state && formData.state.length !== 2) {
+      return "Estado deve ter 2 caracteres (UF).";
+    }
+    if (formData.imageUrl && !isValidURL(formData.imageUrl)) {
+      return "URL da imagem inválida.";
+    }
+    if (formData.consultationFee < 0) {
+      return "Taxa de consulta não pode ser negativa.";
+    }
+    return null;
+  };
+
   const handleSubmit = async () => {
+    const validationError = validateForm();
+    if (validationError) {
+      toast.error(validationError);
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       await veterinarianService.createVeterinarian(formData);
@@ -86,6 +151,7 @@ export function CreateVeterinarianForm({
         consultationFee: 0,
         availableForOnlineConsultation: false,
       });
+      setConsultationFeeDisplay("");
       onSuccess?.();
     } catch (error: any) {
       console.error("Erro ao criar perfil de veterinário:", error);
@@ -123,8 +189,33 @@ export function CreateVeterinarianForm({
     }
   };
 
+  const handleDialogChange = (open: boolean) => {
+    setIsDialogOpen(open);
+    if (!open) {
+      // Reset form when dialog closes
+      setFormData({
+        fullName: "",
+        email: "",
+        phone: "",
+        licenseNumber: "",
+        specialties: [],
+        yearsOfExperience: 0,
+        clinicName: "",
+        clinicAddress: "",
+        city: "",
+        state: "",
+        zipCode: "",
+        bio: "",
+        imageUrl: "",
+        consultationFee: 0,
+        availableForOnlineConsultation: false,
+      });
+      setConsultationFeeDisplay("");
+    }
+  };
+
   return (
-    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+    <Dialog open={isDialogOpen} onOpenChange={handleDialogChange}>
       <DialogTrigger asChild>
         <Button className="cursor-pointer bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm hover:shadow-md transition-all whitespace-nowrap shrink-0">
           <Plus className="mr-2 h-4 w-4 shrink-0" />
@@ -165,9 +256,14 @@ export function CreateVeterinarianForm({
               onChange={(e) =>
                 setFormData({ ...formData, imageUrl: e.target.value })
               }
+              onBlur={(e) => {
+                if (e.target.value && !isValidURL(e.target.value)) {
+                  toast.error("URL inválida. Por favor, insira uma URL válida.");
+                }
+              }}
               placeholder="https://exemplo.com/foto.jpg"
             />
-            {formData.imageUrl && (
+            {formData.imageUrl && isValidURL(formData.imageUrl) && (
               <div className="mt-2">
                 <img
                   src={formData.imageUrl}
@@ -188,9 +284,15 @@ export function CreateVeterinarianForm({
               id="email"
               type="email"
               value={formData.email}
-              onChange={(e) =>
-                setFormData({ ...formData, email: e.target.value })
-              }
+              onChange={(e) => {
+                const value = e.target.value;
+                setFormData({ ...formData, email: value });
+              }}
+              onBlur={(e) => {
+                if (e.target.value && !isValidEmail(e.target.value)) {
+                  toast.error("E-mail inválido. Por favor, insira um e-mail válido.");
+                }
+              }}
               placeholder="seu@email.com"
             />
           </div>
@@ -201,10 +303,12 @@ export function CreateVeterinarianForm({
             <Input
               id="phone"
               value={formData.phone}
-              onChange={(e) =>
-                setFormData({ ...formData, phone: e.target.value })
-              }
+              onChange={(e) => {
+                const formatted = formatPhone(e.target.value);
+                setFormData({ ...formData, phone: formatted });
+              }}
               placeholder="(00) 00000-0000"
+              maxLength={15}
             />
           </div>
           <div className="grid gap-2">
@@ -217,9 +321,14 @@ export function CreateVeterinarianForm({
               onChange={(e) =>
                 setFormData({
                   ...formData,
-                  licenseNumber: e.target.value,
+                  licenseNumber: e.target.value.toUpperCase(),
                 })
               }
+              onBlur={(e) => {
+                if (e.target.value && !isValidCRMV(e.target.value)) {
+                  toast.error("Número de CRMV inválido. Use o formato CRMV-XX 00000.");
+                }
+              }}
               placeholder="CRMV-XX 00000"
             />
           </div>
@@ -250,13 +359,17 @@ export function CreateVeterinarianForm({
               id="yearsOfExperience"
               type="number"
               min="0"
-              value={formData.yearsOfExperience}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  yearsOfExperience: parseInt(e.target.value) || 0,
-                })
-              }
+              max="100"
+              value={formData.yearsOfExperience || ""}
+              onChange={(e) => {
+                const value = parseInt(e.target.value) || 0;
+                if (value >= 0 && value <= 100) {
+                  setFormData({
+                    ...formData,
+                    yearsOfExperience: value,
+                  });
+                }
+              }}
               placeholder="0"
             />
           </div>
@@ -313,7 +426,7 @@ export function CreateVeterinarianForm({
                 onChange={(e) =>
                   setFormData({
                     ...formData,
-                    state: e.target.value.toUpperCase(),
+                    state: formatState(e.target.value),
                   })
                 }
                 placeholder="UF"
@@ -328,10 +441,12 @@ export function CreateVeterinarianForm({
             <Input
               id="zipCode"
               value={formData.zipCode}
-              onChange={(e) =>
-                setFormData({ ...formData, zipCode: e.target.value })
-              }
+              onChange={(e) => {
+                const formatted = formatCEP(e.target.value);
+                setFormData({ ...formData, zipCode: formatted });
+              }}
               placeholder="00000-000"
+              maxLength={9}
             />
           </div>
           <div className="grid gap-2">
@@ -354,17 +469,26 @@ export function CreateVeterinarianForm({
             </label>
             <Input
               id="consultationFee"
-              type="number"
-              step="0.01"
-              min="0"
-              value={formData.consultationFee}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  consultationFee: parseFloat(e.target.value) || 0,
-                })
-              }
-              placeholder="0.00"
+              type="text"
+              value={consultationFeeDisplay}
+              onChange={(e) => {
+                const value = e.target.value;
+                const formatted = formatCurrencyInput(value);
+                setConsultationFeeDisplay(formatted);
+                const numericValue = parseCurrency(value);
+                if (numericValue >= 0 && numericValue <= 999999.99) {
+                  setFormData({
+                    ...formData,
+                    consultationFee: numericValue,
+                  });
+                }
+              }}
+              onBlur={() => {
+                if (formData.consultationFee === 0) {
+                  setConsultationFeeDisplay("");
+                }
+              }}
+              placeholder="0,00"
             />
           </div>
           <div className="flex items-center gap-2">

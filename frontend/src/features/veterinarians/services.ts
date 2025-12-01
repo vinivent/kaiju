@@ -49,6 +49,8 @@ function mapFormDataToRequest(
     profilePicture: formData.imageUrl || undefined,
     isAvailableForChat: formData.availableForOnlineConsultation || false,
     acceptsNewPatients: true, // Default to true
+    consultationFee:
+      formData.consultationFee > 0 ? formData.consultationFee : undefined,
   };
 }
 

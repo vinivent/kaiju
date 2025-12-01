@@ -259,6 +259,10 @@ public class ProductService {
         productRepository.save(product);
     }
 
+    public Long getProductCount() {
+        return productRepository.count();
+    }
+
     private ProductReviewResponseDTO toReviewResponseDTO(ProductReview review) {
         return new ProductReviewResponseDTO(
                 review.getId(),

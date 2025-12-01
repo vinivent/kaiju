@@ -30,6 +30,7 @@ public record VeterinarianResponseDTO(
         Boolean isVerified,
         Boolean isAvailableForChat,
         Double rating,
+        Double consultationFee,
         Integer reviewCount,
         Boolean acceptsNewPatients,
         Date createdAt,

@@ -1,5 +1,5 @@
-import api from '@/lib/http/api';
-import { PaginatedResponse } from '@/app/types/common';
+import api from "@/lib/http/api";
+import { PaginatedResponse } from "@/app/types/common";
 import {
   Product,
   ProductReview,
@@ -7,41 +7,48 @@ import {
   UpdateProductRequest,
   ProductSearchParams,
   CreateReviewRequest,
-} from './model';
+} from "./model";
 
-const BASE_PATH = '/products';
+const BASE_PATH = "/products";
 
 export const productService = {
   /**
    * Search products with filters and pagination
    */
-  async searchProducts(params: ProductSearchParams): Promise<PaginatedResponse<Product>> {
+  async searchProducts(
+    params: ProductSearchParams
+  ): Promise<PaginatedResponse<Product>> {
     const { query, sortBy, sortDirection, ...rest } = params;
 
     const mappedParams = {
       keyword: query,
       ...rest,
-      sort: sortBy ? `${sortBy},${sortDirection ?? 'desc'}` : undefined,
+      sort: sortBy ? `${sortBy},${sortDirection ?? "desc"}` : undefined,
     };
 
-    const response = await api.get<PaginatedResponse<Product>>('/products/search', {
-      params: mappedParams,
-    });
+    const response = await api.get<PaginatedResponse<Product>>(
+      "/products/search",
+      {
+        params: mappedParams,
+      }
+    );
     return response.data;
   },
 
   /**
- * Get all products with filters
- */
-  async getAllProducts(params: ProductSearchParams): Promise<PaginatedResponse<Product>> {
+   * Get all products with filters
+   */
+  async getAllProducts(
+    params: ProductSearchParams
+  ): Promise<PaginatedResponse<Product>> {
     const { sortBy, sortDirection, ...rest } = params;
 
     const mappedParams = {
       ...rest,
-      sort: sortBy ? `${sortBy},${sortDirection ?? 'desc'}` : undefined,
+      sort: sortBy ? `${sortBy},${sortDirection ?? "desc"}` : undefined,
     };
 
-    const response = await api.get<PaginatedResponse<Product>>('/products', {
+    const response = await api.get<PaginatedResponse<Product>>("/products", {
       params: mappedParams,
     });
     return response.data;
@@ -50,10 +57,16 @@ export const productService = {
   /**
    * Get featured products
    */
-  async getFeaturedProducts(page = 0, size = 12): Promise<PaginatedResponse<Product>> {
-    const response = await api.get<PaginatedResponse<Product>>(`${BASE_PATH}/featured`, {
-      params: { page, size },
-    });
+  async getFeaturedProducts(
+    page = 0,
+    size = 12
+  ): Promise<PaginatedResponse<Product>> {
+    const response = await api.get<PaginatedResponse<Product>>(
+      `${BASE_PATH}/featured`,
+      {
+        params: { page, size },
+      }
+    );
     return response.data;
   },
 
@@ -76,7 +89,10 @@ export const productService = {
   /**
    * Update product (requires SELLER role and ownership)
    */
-  async updateProduct(id: string, data: UpdateProductRequest): Promise<Product> {
+  async updateProduct(
+    id: string,
+    data: UpdateProductRequest
+  ): Promise<Product> {
     const response = await api.put<Product>(`${BASE_PATH}/${id}`, data);
     return response.data;
   },
@@ -91,28 +107,48 @@ export const productService = {
   /**
    * Get products by seller
    */
-  async getProductsBySeller(sellerId: string, page = 0, size = 10): Promise<PaginatedResponse<Product>> {
-    const response = await api.get<PaginatedResponse<Product>>(`${BASE_PATH}/seller/${sellerId}`, {
-      params: { page, size },
-    });
+  async getProductsBySeller(
+    sellerId: string,
+    page = 0,
+    size = 10
+  ): Promise<PaginatedResponse<Product>> {
+    const response = await api.get<PaginatedResponse<Product>>(
+      `${BASE_PATH}/seller/${sellerId}`,
+      {
+        params: { page, size },
+      }
+    );
     return response.data;
   },
 
   /**
    * Get product reviews
    */
-  async getProductReviews(productId: string, page = 0, size = 10): Promise<PaginatedResponse<ProductReview>> {
-    const response = await api.get<PaginatedResponse<ProductReview>>(`${BASE_PATH}/${productId}/reviews`, {
-      params: { page, size },
-    });
+  async getProductReviews(
+    productId: string,
+    page = 0,
+    size = 10
+  ): Promise<PaginatedResponse<ProductReview>> {
+    const response = await api.get<PaginatedResponse<ProductReview>>(
+      `${BASE_PATH}/${productId}/reviews`,
+      {
+        params: { page, size },
+      }
+    );
     return response.data;
   },
 
   /**
    * Create product review (requires authentication)
    */
-  async createReview(productId: string, data: CreateReviewRequest): Promise<ProductReview> {
-    const response = await api.post<ProductReview>(`${BASE_PATH}/${productId}/reviews`, data);
+  async createReview(
+    productId: string,
+    data: CreateReviewRequest
+  ): Promise<ProductReview> {
+    const response = await api.post<ProductReview>(
+      `${BASE_PATH}/${productId}/reviews`,
+      data
+    );
     return response.data;
   },
 
@@ -121,5 +157,13 @@ export const productService = {
    */
   async markReviewHelpful(productId: string, reviewId: number): Promise<void> {
     await api.post(`${BASE_PATH}/${productId}/reviews/${reviewId}/helpful`);
+  },
+
+  /**
+   * Get product count
+   */
+  async getProductCount(): Promise<number> {
+    const response = await api.get<number>(`${BASE_PATH}/count`);
+    return response.data;
   },
 };

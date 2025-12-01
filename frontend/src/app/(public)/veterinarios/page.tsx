@@ -61,7 +61,7 @@ export default function VeterinariansPage() {
     [ReptileSpecialty.AMPHIBIANS]: "Anfíbios",
     [ReptileSpecialty.GENERAL]: "Geral",
   };
-
+  
   useEffect(() => {
     loadVeterinarians();
   }, [
