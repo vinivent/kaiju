@@ -1,239 +1,271 @@
-# Kaiju - Exotic Reptile SaaS Backend
+# 🦎 Kaiju
 
-A comprehensive Java Spring Boot backend for an exotic reptile-focused platform.
+Marketplace especializado em répteis com sistema de consultas veterinárias online.
 
-## Features Implemented
+## 📦 Pré-requisitos
 
-### 1. **Product Marketing System**
-- Full CRUD operations for reptile products
-- Categories: Food, Habitat, Heating, Lighting, Health, Accessories, etc.
-- Search and filtering capabilities
-- Product ratings and reviews tracking
-- Inventory management
-- Multi-image support
+### Backend
+- Java 21+
+- Maven 3.6+
+- PostgreSQL 12+
+- Conta Gmail para envio de emails
 
-**Endpoints:**
-- `POST /api/products` - Create product
-- `GET /api/products/{id}` - Get product details
-- `GET /api/products` - List all products (with filters)
-- `GET /api/products/search?keyword=` - Search products
-- `GET /api/products/top-rated` - Top rated products
-- `GET /api/products/latest` - Latest products
-- `PUT /api/products/{id}` - Update product
-- `DELETE /api/products/{id}` - Delete product
+### Frontend
+- Node.js 18+
+- pnpm (recomendado), npm ou yarn
 
-### 2. **Veterinarian Professional Directory**
-- Veterinarian profiles with specializations
-- License verification system
-- Location-based search with geospatial queries
-- Specialization filtering (Herpetology, Reptile Surgery, etc.)
-- Rating and review system
-- Chat availability status
+## ⚙️ Configuração
 
-**Endpoints:**
-- `POST /api/veterinarians` - Register veterinarian
-- `GET /api/veterinarians/{id}` - Get veterinarian profile
-- `GET /api/veterinarians` - List veterinarians (with filters)
-- `GET /api/veterinarians/search?keyword=` - Search by name/clinic
-- `GET /api/veterinarians/specialization/{spec}` - Filter by specialization
-- `GET /api/veterinarians/nearby?lat=&lon=&radius=` - Find nearby vets
-- `GET /api/veterinarians/top-rated` - Top rated veterinarians
-- `PATCH /api/veterinarians/{id}/verify` - Verify veterinarian
-- `PUT /api/veterinarians/{id}` - Update profile
+### 1. Banco de Dados
 
-### 3. **Healthcare Location Search**
-- Clinics, hospitals, pet stores, emergency centers
-- Geospatial search for nearby locations
-- Location type filtering
-- Emergency service availability
-- Operating hours and contact information
-- Multi-veterinarian associations
+Crie o banco de dados PostgreSQL:
 
-**Endpoints:**
-- `POST /api/locations` - Add healthcare location
-- `GET /api/locations/{id}` - Get location details
-- `GET /api/locations` - List all locations (with filters)
-- `GET /api/locations/search?keyword=` - Search locations
-- `GET /api/locations/nearby?lat=&lon=&radius=` - Find nearby
-- `GET /api/locations/emergency` - Emergency locations
-- `GET /api/locations/top-rated` - Top rated locations
-- `PATCH /api/locations/{id}/verify` - Verify location
-
-### 4. **Information & Article System**
-- Rich content management for educational articles
-- Categories: Care guides, species profiles, health, nutrition, etc.
-- SEO-friendly slugs
-- Featured articles
-- View, like, and share tracking
-- Tag-based organization
-- Draft/Published workflow
-
-**Endpoints:**
-- `POST /api/articles` - Create article
-- `GET /api/articles/{id}` - Get article by ID
-- `GET /api/articles/slug/{slug}` - Get by slug (SEO-friendly)
-- `GET /api/articles` - List articles (with filters)
-- `GET /api/articles/search?keyword=` - Search articles
-- `GET /api/articles/tag/{tag}` - Articles by tag
-- `GET /api/articles/popular` - Most viewed articles
-- `GET /api/articles/latest` - Latest articles
-- `PATCH /api/articles/{id}/view` - Increment view count
-- `PATCH /api/articles/{id}/like` - Increment like count
-
-### 5. **Professional Chat System**
-- Real-time chat between users and veterinarians
-- Conversation management
-- Message attachments support
-- Read/unread tracking
-- Conversation status (Active/Closed/Archived)
-- Message history
-
-**Endpoints:**
-- `POST /api/chat/conversations` - Start conversation
-- `GET /api/chat/conversations` - Get user's conversations
-- `GET /api/chat/conversations/{id}` - Get conversation details
-- `POST /api/chat/conversations/{id}/messages` - Send message
-- `GET /api/chat/conversations/{id}/messages` - Get messages
-- `PATCH /api/chat/conversations/{id}/read` - Mark as read
-- `PATCH /api/chat/conversations/{id}/close` - Close conversation
-- `GET /api/chat/unread-count` - Get unread count
-
-## Project Structure
-
-```
-backend/
-└── src/
-    └── main/
-        └── java/
-            └── com/
-                └── cesar/
-                    └── kaiju/
-                        ├── controller/       # REST controllers
-                        │   ├── AuthController.java
-                        │   ├── UserController.java
-                        │   ├── ProductController.java
-                        │   ├── VeterinarianController.java
-                        │   ├── HealthcareLocationController.java
-                        │   ├── ArticleController.java
-                        │   └── ChatController.java
-                        ├── dto/              # Data Transfer Objects
-                        │   ├── Product (Request/Response) DTOs
-                        │   ├── Veterinarian (Request/Response) DTOs
-                        │   ├── HealthcareLocation (Request/Response) DTOs
-                        │   ├── Article (Request/Response) DTOs
-                        │   └── Chat (Request/Response) DTOs
-                        ├── enums/            # Enumerations
-                        │   ├── ProductCategory.java
-                        │   ├── ProductStatus.java
-                        │   ├── VeterinarianSpecialization.java
-                        │   ├── LocationType.java
-                        │   ├── ArticleCategory.java
-                        │   ├── ArticleStatus.java
-                        │   ├── ConversationStatus.java
-                        │   ├── MessageType.java
-                        │   └── UserRole.java
-                        ├── model/            # JPA Entities
-                        │   ├── User.java
-                        │   ├── UserVerified.java
-                        │   ├── PasswordResetToken.java
-                        │   ├── Product.java
-                        │   ├── Veterinarian.java
-                        │   ├── HealthcareLocation.java
-                        │   ├── Article.java
-                        │   ├── ChatConversation.java
-                        │   └── ChatMessage.java
-                        ├── repository/       # JPA Repositories
-                        │   ├── UserRepository.java
-                        │   ├── UserVerifiedRepository.java
-                        │   ├── PasswordResetTokenRepository.java
-                        │   ├── ProductRepository.java
-                        │   ├── VeterinarianRepository.java
-                        │   ├── HealthcareLocationRepository.java
-                        │   ├── ArticleRepository.java
-                        │   ├── ChatConversationRepository.java
-                        │   └── ChatMessageRepository.java
-                        └── service/          # Business logic (to be implemented)
+```bash
+createdb kaiju
 ```
 
-## Technology Stack
+Ou via psql:
 
-- **Framework:** Spring Boot 3.x
-- **Database:** JPA/Hibernate (PostgreSQL recommended)
-- **Security:** Spring Security with JWT
-- **Validation:** Jakarta Validation
-- **Documentation:** Lombok for boilerplate reduction
+```sql
+psql -U postgres
+CREATE DATABASE kaiju;
+\q
+```
 
-## Key Features
+### 2. Variáveis de Ambiente - Backend
 
-### Geospatial Capabilities
-- Nearby search using Haversine formula for veterinarians and locations
-- Latitude/longitude support
-- Configurable search radius
+Crie um arquivo `.env` na raiz de `backend/`:
 
-### Search & Filtering
-- Full-text search across multiple entities
-- Category and status filtering
-- Tag-based filtering for articles
-- Pagination support on all list endpoints
+```env
+# Database
+DATABASE_HOST=localhost
+DATABASE_PORT=5432
+DATABASE_NAME=kaiju
+DATABASE_USER=postgres
+DATABASE_PASSWORD=sua_senha
 
-### Security Features
-- JWT-based authentication
-- Password reset token system
-- Email verification workflow
-- User role management
+# JWT
+JWT_SECRET_KEY=sua_chave_secreta_jwt_muito_segura
 
-### Data Integrity
-- Comprehensive validation using Jakarta Validation
-- Unique constraints on critical fields
-- Proper entity relationships with JPA
+# Email
+APP.MAIL.SENDER.EMAIL=seu_email@gmail.com
+GMAIL_APP_PASSWORD=sua_senha_de_app_do_gmail
 
-## Next Steps
+# Frontend URL
+app.base-url=http://localhost:3000
+```
 
-### Service Layer Implementation
-Create service classes with business logic for:
-1. `ProductService` - Product management logic
-2. `VeterinarianService` - Veterinarian profile management
-3. `HealthcareLocationService` - Location management
-4. `ArticleService` - Content management with slug generation
-5. `ChatService` - Real-time chat functionality
+**Como obter a senha de app do Gmail:**
+1. Acesse [Google Account Security](https://myaccount.google.com/security)
+2. Ative a verificação em duas etapas
+3. Gere uma "Senha de app" em "Senhas de app"
+4. Use essa senha no `GMAIL_APP_PASSWORD`
 
-### Additional Enhancements
-- Review and rating system implementation
-- File upload service for images
-- Email notification service
-- Real-time WebSocket support for chat
-- Advanced search with Elasticsearch
-- Caching layer with Redis
-- API documentation with Swagger/OpenAPI
+### 3. Variáveis de Ambiente - Frontend
 
-## Database Schema Notes
+Crie um arquivo `.env.local` na raiz de `frontend/`:
 
-### Key Relationships
-- `Product` → Many-to-One → `User` (seller)
-- `Veterinarian` → One-to-One → `User`
-- `HealthcareLocation` → Many-to-Many → `Veterinarian`
-- `Article` → Many-to-One → `User` (author)
-- `ChatConversation` → Many-to-One → `User` and `Veterinarian`
-- `ChatMessage` → Many-to-One → `ChatConversation` and `User` (sender)
+```env
+NEXT_PUBLIC_API_BASE_URL=http://localhost:8080/api
+```
 
-### Special Fields
-- **Timestamps:** All entities have `createdAt` and `updatedAt`
-- **Soft Delete:** Consider implementing for data retention
-- **Audit:** User actions tracked through relationships
+## 🚀 Instalação e Execução
 
-## API Best Practices
+### Backend
 
-- RESTful endpoint design
-- Proper HTTP status codes
-- Pagination for list endpoints
-- Filtering and search capabilities
-- Validation error responses
-- Consistent response formats using DTOs
+```bash
+cd backend
 
-## Development Notes
+# Instalar dependências e executar
+mvn clean install
+mvn spring-boot:run
+```
 
-- All DTOs use Java Records for immutability
-- Repositories use Spring Data JPA with custom queries
-- Controllers follow RESTful conventions
-- Enums provide type-safe categorization
-- Lombok reduces boilerplate code
+A API estará disponível em `http://localhost:8080`
+
+### Frontend
+
+```bash
+cd frontend
+
+# Instalar dependências
+pnpm install
+
+# Executar em modo desenvolvimento
+pnpm dev
+```
+
+A aplicação estará disponível em `http://localhost:3000`
+
+## 📡 API Endpoints
+
+### Autenticação (`/api/auth`)
+
+| Método | Endpoint | Descrição | Auth |
+|--------|----------|-----------|------|
+| POST | `/register` | Registrar novo usuário | ❌ |
+| POST | `/login` | Fazer login | ❌ |
+| POST | `/logout` | Fazer logout | ✅ |
+| GET | `/session` | Validar sessão | ❌ |
+| GET | `/verify/{token}` | Verificar conta | ❌ |
+| POST | `/resend-verification` | Reenviar email de verificação | ❌ |
+| POST | `/forgot-password` | Solicitar recuperação de senha | ❌ |
+| POST | `/reset-password` | Redefinir senha | ❌ |
+| GET | `/reset-password/validate` | Validar token de reset | ❌ |
+
+### Usuários (`/api/user`)
+
+| Método | Endpoint | Descrição | Auth |
+|--------|----------|-----------|------|
+| GET | `/me` | Obter usuário atual | ✅ |
+| GET | `/{id}` | Obter usuário por ID | ✅ |
+| PUT | `/{id}` | Atualizar usuário | ✅ |
+| DELETE | `/{id}` | Deletar usuário | ✅ |
+
+### Produtos (`/api/products`)
+
+| Método | Endpoint | Descrição | Auth |
+|--------|----------|-----------|------|
+| POST | `/` | Criar produto | ✅ |
+| GET | `/` | Listar produtos (paginado) | ❌ |
+| GET | `/{id}` | Obter produto por ID | ❌ |
+| GET | `/search` | Buscar produtos | ❌ |
+| GET | `/count` | Contar produtos | ❌ |
+
+### Veterinários (`/api/veterinarians`)
+
+| Método | Endpoint | Descrição | Auth |
+|--------|----------|-----------|------|
+| POST | `/` | Criar perfil de veterinário | ✅ |
+| GET | `/` | Listar veterinários (paginado) | ❌ |
+| GET | `/{id}` | Obter veterinário por ID | ❌ |
+| GET | `/search` | Buscar veterinários | ❌ |
+
+## ✨ Features
+
+### 🔐 Autenticação e Segurança
+- Registro de usuários com verificação por email
+- Login com JWT (JSON Web Tokens)
+- Recuperação de senha via email
+- Rate limiting em endpoints sensíveis
+- Headers de segurança (XSS, CSRF, HSTS)
+- Envio assíncrono de emails
+- Validação de dados de entrada
+
+### 🛒 Marketplace
+- Catálogo de produtos especializados para répteis
+- Busca e filtros avançados
+- Carrinho de compras
+- Gestão de estoque
+- Sistema de avaliações
+
+### 🏥 Veterinários
+- Perfis de veterinários especializados em répteis
+- Busca por especialidade e localização
+- Consultas online
+- Taxa de consulta personalizável
+- Integração com WhatsApp
+
+### 🎨 Interface
+- Design moderno e responsivo
+- Tema dark/light
+- Otimização de imagens (Next.js Image)
+- Formatação automática de campos
+- Validação em tempo real
+- Sistema de notificações toast
+
+## 🔒 Segurança
+
+### Rate Limiting
+- **Registro**: 5 requisições/minuto por IP
+- **Login**: 10 tentativas/minuto por IP
+- **Recuperação de senha**: 3 tentativas/minuto por IP
+- **Reenvio de verificação**: 3 tentativas/minuto por IP
+
+### Headers de Segurança
+```
+X-Content-Type-Options: nosniff
+X-Frame-Options: DENY
+X-XSS-Protection: 1; mode=block
+Strict-Transport-Security: max-age=31536000
+Referrer-Policy: strict-origin-when-cross-origin
+```
+
+### Boas Práticas
+- Senhas criptografadas com BCrypt (salt rounds: 10)
+- Tokens JWT com expiração configurável
+- Cookies HttpOnly e Secure
+- Validação rigorosa de entrada
+- Tratamento genérico de erros
+
+## 🛠 Comandos Úteis
+
+### Backend
+
+```bash
+# Compilar
+mvn clean compile
+
+# Executar testes
+mvn test
+
+# Gerar JAR executável
+mvn clean package
+
+# Executar JAR
+java -jar target/kaiju-0.0.1-SNAPSHOT.jar
+
+# Verificar dependências
+mvn dependency:tree
+```
+
+### Frontend
+
+```bash
+# Desenvolvimento
+pnpm dev
+
+# Build de produção
+pnpm build
+
+# Executar produção
+pnpm start
+
+# Linter
+pnpm lint
+
+# Atualizar dependências
+pnpm update
+```
+
+## 📝 Notas Importantes
+
+### Banco de Dados
+O Hibernate está configurado com `ddl-auto=update` para desenvolvimento. As tabelas são criadas e atualizadas automaticamente. Para produção, considere usar `ddl-auto=validate` com migrations (Flyway/Liquibase).
+
+### Emails
+Os emails são enviados de forma assíncrona através de um pool de threads (2-5 threads, fila de 100). Isso garante que as respostas da API não sejam bloqueadas durante o envio.
+
+### CORS
+O CORS está habilitado por padrão no Spring Security. Para produção, configure origens específicas no `SecurityConfig.java`.
+
+### Estrutura de Diretórios
+
+```
+kaiju/
+├── backend/
+│   ├── src/
+│   │   ├── main/
+│   │   │   ├── java/
+│   │   │   └── resources/
+│   │   └── test/
+│   └── pom.xml
+├── frontend/
+│   ├── src/
+│   │   ├── app/
+│   │   ├── components/
+│   │   └── lib/
+│   ├── public/
+│   └── package.json
+└── README.md
+```
