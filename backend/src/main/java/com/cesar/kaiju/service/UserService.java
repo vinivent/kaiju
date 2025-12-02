@@ -87,7 +87,7 @@ public class UserService implements UserDetailsService {
         verification.setVerificationToken(UUID.randomUUID().toString());
         userVerifiedRepository.save(verification);
 
-        // Send verification email asynchronously - doesn't block the response
+        // Send verification email
         // URL points to frontend verification page
         String verificationUrl = baseUrl + "/verify/" + verification.getVerificationToken();
         mailService.sendAccountVerificationEmail(savedUser.getEmail(), verificationUrl, savedUser.getUsername());
@@ -132,7 +132,7 @@ public class UserService implements UserDetailsService {
         verification.setVerificationToken(UUID.randomUUID().toString());
         userVerifiedRepository.save(verification);
 
-        // Send verification email asynchronously - doesn't block the response
+        // Send verification email
         String verificationUrl = baseUrl + "/verify/" + verification.getVerificationToken();
         mailService.sendResendVerificationEmail(user.getEmail(), verificationUrl, user.getUsername());
     }
@@ -151,7 +151,7 @@ public class UserService implements UserDetailsService {
         resetToken.setExpiration(Instant.now().plusSeconds(3600)); // 1 hour
         passwordResetTokenRepository.save(resetToken);
 
-        // Send reset email asynchronously - doesn't block the response
+        // Send reset email
         String resetUrl = baseUrl + "/reset-password?token=" + resetToken.getToken();
         mailService.sendPasswordResetEmail(user.getEmail(), resetUrl, user.getUsername());
     }
