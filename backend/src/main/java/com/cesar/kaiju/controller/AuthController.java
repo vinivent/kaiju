@@ -98,7 +98,7 @@ public class AuthController {
     public ResponseEntity<String> register(@RequestBody UserRegisterRequestDTO request) {
         try {
             userService.createUser(request);
-            return ResponseEntity.ok("Usuário registrado com sucesso. Verifique seu e-mail.");
+            return ResponseEntity.ok("Usuário registrado com sucesso.");
         } catch (EmailAlreadyUsedException | UsernameAlreadyUsedExcpetion e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(e.getMessage());
