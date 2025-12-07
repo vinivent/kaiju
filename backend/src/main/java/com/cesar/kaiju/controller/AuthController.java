@@ -40,8 +40,8 @@ public class AuthController {
 
             ResponseCookie cookie = ResponseCookie.from("token", token)
                     .httpOnly(true)
-                    .secure(false)
-                    .sameSite("Lax")
+                    .secure(true)
+                    .sameSite("None")
                     .path("/")
                     .maxAge(7 * 24 * 60 * 60)
                     .build();
@@ -60,8 +60,8 @@ public class AuthController {
     public ResponseEntity<String> logout() {
         ResponseCookie cookie = ResponseCookie.from("token", "")
                 .httpOnly(true)
-                .secure(false)
-                .sameSite("Lax")
+                .secure(true)
+                .sameSite("None")
                 .path("/")
                 .maxAge(0)
                 .build();
