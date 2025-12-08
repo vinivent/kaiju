@@ -97,8 +97,8 @@ public class UserController {
             // Clear the token cookie
             ResponseCookie cookie = ResponseCookie.from("token", "")
                     .httpOnly(true)
-                    .secure(false)
-                    .sameSite("Lax")
+                    .secure(true)
+                    .sameSite("None")
                     .path("/")
                     .maxAge(0)
                     .build();

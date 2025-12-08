@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import apiClient from "./lib/http/api";
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080/api";
 
 const HOME = "/home";
 
@@ -47,10 +48,15 @@ export async function middleware(req: NextRequest) {
 
 async function validateSession(token: string): Promise<boolean> {
   try {
-    await apiClient.get("/auth/session", {
-      headers: { cookie: `token=${token}` },
+    const response = await fetch(`${API_BASE_URL}/auth/session`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Cookie: `token=${token}`,
+      },
+      credentials: "include",
     });
-    return true;
+    return response.ok;
   } catch {
     return false;
   }
