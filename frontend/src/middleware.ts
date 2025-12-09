@@ -2,7 +2,19 @@ import { NextRequest, NextResponse } from "next/server";
 
 const HOME = "/home";
 
-const OPEN = ["/", "/contato", "/forgot-password", "/reset-password", "/produtos", "/artigos", "/veterinarios", "/locais", "/profile", "/verify"];
+const OPEN = [
+  "/",
+  "/contato",
+  "/forgot-password",
+  "/reset-password",
+  "/produtos",
+  "/artigos",
+  "/veterinarios",
+  "/locais",
+  "/profile",
+  "/verify",
+  "/home",
+];
 const ONLY_GUEST = ["/login", "/register"];
 
 // prefixes e extensões de assets/imagens que devem ser liberados
@@ -17,7 +29,7 @@ function isValidJwtFormat(token: string): boolean {
   if (!token) return false;
   const parts = token.split(".");
   if (parts.length !== 3) return false;
-  
+
   try {
     // Tenta decodificar o payload para verificar se não expirou
     const payload = JSON.parse(atob(parts[1]));
@@ -55,7 +67,7 @@ export function middleware(req: NextRequest) {
 
   // demais rotas: protegidas
   if (!hasValidToken) return toLogin(req);
-  
+
   return NextResponse.next();
 }
 
