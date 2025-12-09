@@ -41,13 +41,21 @@ const Login = () => {
     try {
       const response = await authService.login({ username: username, password });
       
+      console.log("Login response:", response);
+      console.log("Token recebido:", response.data?.token);
+      
       // Salva o cookie no domínio do frontend para o middleware conseguir ler
       if (response.data?.token) {
         setAuthCookie(response.data.token);
+        console.log("Cookie após setAuthCookie:", document.cookie);
+      } else {
+        console.error("Token não recebido na resposta!");
       }
       
       toast.success(response.data?.message || 'Login realizado com sucesso');
-      router.push("/home");
+      
+      // Usa navegação hard para garantir que o middleware execute com o novo cookie
+      window.location.href = "/home";
     } catch (error: unknown) {
       console.error(error);
       const message = error instanceof Error ? error.message : 'Erro ao fazer login';
