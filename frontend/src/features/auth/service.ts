@@ -17,15 +17,20 @@ const getErrorMessage = (error: unknown, defaultMessage: string): string => {
 const TOKEN_COOKIE_NAME = "token";
 const TOKEN_MAX_AGE = 7 * 24 * 60 * 60;
 
+const isSecure = () =>
+  typeof window !== "undefined" && window.location.protocol === "https:";
+
 export const setAuthCookie = (token: string) => {
   if (typeof document !== "undefined") {
-    document.cookie = `${TOKEN_COOKIE_NAME}=${token}; path=/; max-age=${TOKEN_MAX_AGE}`;
+    const secureFlag = isSecure() ? "; Secure; SameSite=None" : "";
+    document.cookie = `${TOKEN_COOKIE_NAME}=${token}; path=/; max-age=${TOKEN_MAX_AGE}${secureFlag}`;
   }
 };
 
 export const clearAuthCookie = () => {
   if (typeof document !== "undefined") {
-    document.cookie = `${TOKEN_COOKIE_NAME}=; path=/; max-age=0`;
+    const secureFlag = isSecure() ? "; Secure; SameSite=None" : "";
+    document.cookie = `${TOKEN_COOKIE_NAME}=; path=/; max-age=0${secureFlag}`;
   }
 };
 
