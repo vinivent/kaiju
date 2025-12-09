@@ -14,33 +14,18 @@ const getErrorMessage = (error: unknown, defaultMessage: string): string => {
   return defaultMessage;
 };
 
-// Cookie helpers para o domínio do frontend (necessário para o middleware funcionar em produção)
 const TOKEN_COOKIE_NAME = "token";
-const TOKEN_MAX_AGE = 7 * 24 * 60 * 60; // 7 dias em segundos
+const TOKEN_MAX_AGE = 7 * 24 * 60 * 60;
 
 export const setAuthCookie = (token: string) => {
   if (typeof document !== "undefined") {
-    // Detecta se está em HTTPS para adicionar secure flag
-    const isSecure = window.location.protocol === "https:";
-    const secureFlag = isSecure ? "; secure" : "";
-    const cookieString = `${TOKEN_COOKIE_NAME}=${token}; path=/; max-age=${TOKEN_MAX_AGE}${secureFlag}; samesite=lax`;
-    console.log(
-      "Tentando setar cookie:",
-      cookieString.substring(0, 100) + "..."
-    );
-    document.cookie = cookieString;
-    console.log(
-      "document.cookie após setar:",
-      document.cookie.substring(0, 50) + "..."
-    );
+    document.cookie = `${TOKEN_COOKIE_NAME}=${token}; path=/; max-age=${TOKEN_MAX_AGE}`;
   }
 };
 
 export const clearAuthCookie = () => {
   if (typeof document !== "undefined") {
-    const isSecure = window.location.protocol === "https:";
-    const secureFlag = isSecure ? "; secure" : "";
-    document.cookie = `${TOKEN_COOKIE_NAME}=; path=/; max-age=0${secureFlag}; samesite=lax`;
+    document.cookie = `${TOKEN_COOKIE_NAME}=; path=/; max-age=0`;
   }
 };
 
@@ -64,6 +49,9 @@ export const authService = {
         "/auth/login",
         request
       );
+      if (response.data?.token) {
+        setAuthCookie(response.data.token);
+      }
       return { data: response.data };
     } catch (error: unknown) {
       throw new Error(
@@ -75,11 +63,9 @@ export const authService = {
   async logout(): Promise<ApiResponse<string>> {
     try {
       const response = await api.post("/auth/logout");
-      // Limpa o cookie do frontend também
       clearAuthCookie();
       return { data: response.data };
     } catch (error: unknown) {
-      // Mesmo em caso de erro, limpa o cookie local
       clearAuthCookie();
       throw new Error(
         "Erro ao fazer logout: " + getErrorMessage(error, "Erro desconhecido")

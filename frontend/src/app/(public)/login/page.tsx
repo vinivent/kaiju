@@ -4,8 +4,7 @@ import React, { useState } from "react";
 import { Eye, EyeOff, LoaderCircle } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
-import { authService, setAuthCookie } from "@/features/auth/service";
-import { useRouter } from "next/navigation";
+import { authService } from "@/features/auth/service";
 
 // --- SUB-COMPONENTS ---
 
@@ -23,8 +22,6 @@ const Login = () => {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
-  const router = useRouter();
-
   const title = (
     <span className="font-light text-foreground tracking-tighter">
       Bem-vindo
@@ -39,26 +36,11 @@ const Login = () => {
     setIsLoading(true);
 
     try {
-      const response = await authService.login({ username: username, password });
-      
-      console.log("Login response:", response);
-      console.log("Token recebido:", response.data?.token);
-      
-      // Salva o cookie no domínio do frontend para o middleware conseguir ler
-      if (response.data?.token) {
-        setAuthCookie(response.data.token);
-        console.log("Cookie após setAuthCookie:", document.cookie);
-      } else {
-        console.error("Token não recebido na resposta!");
-      }
-      
-      toast.success(response.data?.message || 'Login realizado com sucesso');
-      
-      // Usa navegação hard para garantir que o middleware execute com o novo cookie
+      const response = await authService.login({ username, password });
+      toast.success(response.data?.message || "Login realizado com sucesso");
       window.location.href = "/home";
     } catch (error: unknown) {
-      console.error(error);
-      const message = error instanceof Error ? error.message : 'Erro ao fazer login';
+      const message = error instanceof Error ? error.message : "Erro ao fazer login";
       toast.error(message);
     } finally {
       setIsLoading(false);
@@ -66,8 +48,7 @@ const Login = () => {
   };
 
   function onResetPassword() {
-    console.log("Reset password clicado");
-    // abra modal/navegue para /forgot-password
+    window.location.href = "/forgot-password";
   }
 
   return (
