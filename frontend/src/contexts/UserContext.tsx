@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { userService } from '@/features/user/service';
 import { UserResponse } from '@/features/user/model';
+import { clearAuthCookie } from '@/features/auth/service';
 
 interface UserContextType {
     user: UserResponse | null;
@@ -36,6 +37,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const clearUser = () => {
         setUser(null);
+        clearAuthCookie();
     };
 
     useEffect(() => {

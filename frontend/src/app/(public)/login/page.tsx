@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { Eye, EyeOff, LoaderCircle } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
-import { authService } from "@/features/auth/service";
+import { authService, setAuthCookie } from "@/features/auth/service";
 import { useRouter } from "next/navigation";
 
 // --- SUB-COMPONENTS ---
@@ -40,8 +40,13 @@ const Login = () => {
 
     try {
       const response = await authService.login({ username: username, password });
+      
+      // Salva o cookie no domínio do frontend para o middleware conseguir ler
+      if (response.data?.token) {
+        setAuthCookie(response.data.token);
+      }
+      
       toast.success(response.data?.message || 'Login realizado com sucesso');
-      await new Promise(resolve => setTimeout(resolve, 100));
       router.push("/home");
     } catch (error: unknown) {
       console.error(error);

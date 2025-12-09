@@ -14,6 +14,22 @@ const getErrorMessage = (error: unknown, defaultMessage: string): string => {
   return defaultMessage;
 };
 
+// Cookie helpers para o domínio do frontend (necessário para o middleware funcionar em produção)
+const TOKEN_COOKIE_NAME = "token";
+const TOKEN_MAX_AGE = 7 * 24 * 60 * 60; // 7 dias em segundos
+
+export const setAuthCookie = (token: string) => {
+  if (typeof document !== "undefined") {
+    document.cookie = `${TOKEN_COOKIE_NAME}=${token}; path=/; max-age=${TOKEN_MAX_AGE}; secure; samesite=lax`;
+  }
+};
+
+export const clearAuthCookie = () => {
+  if (typeof document !== "undefined") {
+    document.cookie = `${TOKEN_COOKIE_NAME}=; path=/; max-age=0; secure; samesite=lax`;
+  }
+};
+
 export const authService = {
   async register(request: RegisterRequest): Promise<ApiResponse<string>> {
     try {
@@ -36,8 +52,12 @@ export const authService = {
   async logout(): Promise<ApiResponse<string>> {
     try {
       const response = await api.post("/auth/logout");
+      // Limpa o cookie do frontend também
+      clearAuthCookie();
       return { data: response.data };
     } catch (error: unknown) {
+      // Mesmo em caso de erro, limpa o cookie local
+      clearAuthCookie();
       throw new Error("Erro ao fazer logout: " + getErrorMessage(error, "Erro desconhecido"));
     }
   },
